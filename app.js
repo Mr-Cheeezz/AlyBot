@@ -98,16 +98,16 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
   
       if (onlineStatus > 30) {
         return client.raw(
-          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is not playing anything right now.`);
+          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is not playing anything right now.`);
       }
       console.log(location)
       if (location != 'Website') {
        client.raw(
-        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currently playing ${location}.`); 
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is currently playing ${location}.`); 
       return
       }
   
-      return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currently switching games.`); 
+      return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is currently switching games.`); 
       }
 });
 
@@ -127,16 +127,16 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
         if (onlineStatus > 30) {
             return client.raw(
-              `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is not playing anything right now.`);
+              `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
           }
           console.log(location)
           if (location != 'Website') {
            client.raw(
-            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currently playing ${location}.`); 
+            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${location}.`); 
           return
           }
       
-          return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currently switching games.`);
+          return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);
         
     }
 });
@@ -158,7 +158,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
     }
 
     if (message.includes("***")) {
-        client.say(CHANNEL_NAME, `@${twitchUsername}, Do NOT send links.`);
+        client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
     }
 
     if (
@@ -201,32 +201,32 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
 client.on("raided", (channel, username, viewers, method) => { 
     if (viewers > 4) {
-    client.say(CHANNEL_NAME, `Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
     }
 });
 
 client.on("subgift", (channel, username, viewers, method) => {
-    client.say(CHANNEL_NAME, `@${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
-    client.say(CHANNEL_NAME, `@${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
+    client.say(CHANNEL_NAME, `/me [🤖]: @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
+    client.say(CHANNEL_NAME, `/me [🤖]: @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
 });
 
 client.on("cheer", (channel, username, viewers, method, userstate) => {
     var Bits = userstate.bits
-    client.say(CHANNEL_NAME, `Thank you @${username} xqcL for the ${Bits} bits. aly1263Sheesh`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thank you @${username} xqcL for the ${Bits} bits. aly1263Sheesh`);
 });
 
 client.on("resub", (channel, username, viewers, method) => {
-    client.say(CHANNEL_NAME, `Thanks for resubbing @${username}. aly1263Vibe`);
-    client.say(CHANNEL_NAME, `Thanks for resubbing @${username}. aly1263Vibe`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing @${username}. aly1263Vibe`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing @${username}. aly1263Vibe`);
 });
 
 client.on("subscription", (channel, username, viewers, method) => {
-    client.say(CHANNEL_NAME, `Thanks for subbing @${username}. aly1263Vibe`);
-    client.say(CHANNEL_NAME, `Thanks for subbing @${username}. aly1263Vibe`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for subbing @${username}. aly1263Vibe`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for subbing @${username}. aly1263Vibe`);
 });
 
 client.on("hosting", async (channel, username, viewers, method, userstate) => {
-    client.say(CHANNEL_NAME, `Aly is now hosting ${username}. xqcEZ`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Aly is now hosting ${username}. xqcEZ`);
     if ((await TWITCH_FUNCTIONS.isLive() == false)) {
         client.say(username, `Aly just hosted ${username}.`);
     }

@@ -153,7 +153,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("how do I join") ||
         message.toLowerCase().includes("how to join")
     ) {
-        client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`);
+        client.say(CHANNEL_NAME, `/me !roblox @${twitchUsername}`);
     }
 
     if (message.includes("***")) {
@@ -171,13 +171,13 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("pls friend me") ||
         message.toLowerCase().includes("send you a friend request")
     ) {
-        client.say(CHANNEL_NAME, `!add @${twitchUsername}`);
+        client.say(CHANNEL_NAME, `/me !add @${twitchUsername}`);
     }
 
     if (
         message.toLowerCase().includes("what time is it")
     ) {
-        client.say(CHANNEL_NAME, `!time @${twitchUsername}`);
+        client.say(CHANNEL_NAME, `/me !time @${twitchUsername}`);
     }
 
     if (
@@ -194,7 +194,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("what is this song") ||
         message.toLowerCase().includes("what is this music") 
     ) {
-        client.say(CHANNEL_NAME, `!song @${twitchUsername}`)
+        client.say(CHANNEL_NAME, `/me !song @${twitchUsername}`)
     }
 });
 

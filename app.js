@@ -153,11 +153,11 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("how do I join") ||
         message.toLowerCase().includes("how to join")
     ) {
-        client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`)
+        client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`);
     }
 
     if (message.includes("***")) {
-        client.say(CHANNEL_NAME, `@${twitchUsername}, Do NOT send links.`)
+        client.say(CHANNEL_NAME, `@${twitchUsername}, Do NOT send links.`);
     }
 
     if (
@@ -171,13 +171,13 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("pls friend me") ||
         message.toLowerCase().includes("send you a friend request")
     ) {
-        client.say(CHANNEL_NAME, `!add @${twitchUsername}`)
+        client.say(CHANNEL_NAME, `!add @${twitchUsername}`);
     }
 
     if (
         message.toLowerCase().includes("what time is it")
     ) {
-        client.say(CHANNEL_NAME, `!time @${twitchUsername}`)
+        client.say(CHANNEL_NAME, `!time @${twitchUsername}`);
     }
 
     if (
@@ -200,7 +200,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
 client.on("raided", (channel, username, viewers, method) => { 
     if (viewers > 4) {
-    client.say(CHANNEL_NAME, `Thank you so much @${username} for the raid of ${viewers}.`);
+    client.say(CHANNEL_NAME, `Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
     }
 });
 
@@ -224,8 +224,16 @@ client.on("subscription", (channel, username, viewers, method) => {
     client.say(CHANNEL_NAME, `Thanks for subbing @${username}. aly1263Vibe`);
 });
 
-client.on("hosting", (channel, username, viewers, method, userstate) => {
+client.on("hosting", async (channel, username, viewers, method, userstate) => {
     client.say(CHANNEL_NAME, `Aly is now hosting ${username}. xqcEZ`);
-
-    client.say(username, `Aly just hosted ${username}.`);
+    if ((await TWITCH_FUNCTIONS.isLive() == false)) {
+        client.say(username, `Aly just hosted ${username}.`);
+    }
+    client.say(username, `KAPOW ALY RAID KAPOW`);
+    await setTimeout(1 * 1000)
+    client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
+    await setTimeout(1 * 1000)
+    client.say(username, `KAPOW ALY RAID KAPOW`);
+    await setTimeout(1 * 1000)
+    client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
 });

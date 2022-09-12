@@ -53,7 +53,7 @@ setInterval(async () => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 
     if (SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-        client.say(CHANNEL_NAME, `type !roblox to join aly`)
+        client.say(CHANNEL_NAME, `/me [🤖]: type !roblox to join aly`)
     }
 }, 7 * 60 * 1000);
 
@@ -63,7 +63,7 @@ setInterval(async () => {
     const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
 
     if (SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-        // client.say(CHANNEL_NAME, `Aly is currently playing ${robloxGame}`)
+        // client.say(CHANNEL_NAME, `/me [🤖]: Aly is currently playing ${robloxGame}`)
     }
 }, 5 * 60 * 1000);
 
@@ -78,7 +78,7 @@ setInterval(async () => {
   
       var soicalsTimer =
         promo[Math.floor(Math.random() * promo.length)];
-      // client.say(CHANNEL_NAME, `${soicalsTimer}`);
+      // client.say(CHANNEL_NAME, `/me ${soicalsTimer}`);
     }
 }, 30 * 7 * 1000);
 

@@ -14,7 +14,6 @@ import * as TWITCH_FUNCTIONS from "./Functions/twitch.js";
 
 const alyId = 72121088
 
-import buddyList from "spotify-buddylist";
 import { join } from "path";
 import { setEngine, verify } from "crypto";
 import { get } from "http";
@@ -61,10 +60,10 @@ setInterval(async () => {
 setInterval(async () => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 
-    const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
+    const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
 
     if (SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-        // client.say(CHANNEL_NAME, `Aly is currently playing ${location}`)
+        // client.say(CHANNEL_NAME, `Aly is currently playing ${robloxGame}`)
     }
 }, 5 * 60 * 1000);
 
@@ -77,9 +76,9 @@ setInterval(async () => {
         `!youtube`
       ];
   
-      var discordTimer =
+      var soicalsTimer =
         promo[Math.floor(Math.random() * promo.length)];
-      // client.say(CHANNEL_NAME, `${discordTimer}`);
+      // client.say(CHANNEL_NAME, `${soicalsTimer}`);
     }
 }, 30 * 7 * 1000);
 
@@ -91,23 +90,23 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
     const twitchDisplayName = userstate["display-name"];
 
       if (message.toLowerCase() == "!game" || message.toLowerCase() == "1game") {
-      const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
+      const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
       const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId})
       const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes})
   
   
       if (onlineStatus > 30) {
         return client.raw(
-          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is not playing anything right now.`);
+          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
       }
-      console.log(location)
-      if (location != 'Website') {
+      console.log(robloxGame)
+      if (robloxGame != 'Website') {
        client.raw(
-        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is currently playing ${location}.`); 
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${robloxGame}.`); 
       return
       }
   
-      return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]:Aly is currently switching games.`); 
+      return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`); 
       }
 });
 
@@ -121,7 +120,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("game name") ||
 		message.toLowerCase().includes("what is this game")
     ) {
-        const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
+        const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
         const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId})
         const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes})
 
@@ -129,10 +128,10 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
             return client.raw(
               `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
           }
-          console.log(location)
-          if (location != 'Website') {
+          console.log(robloxGame)
+          if (robloxGame != 'Website') {
            client.raw(
-            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${location}.`); 
+            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${robloxGame}.`); 
           return
           }
       
@@ -186,7 +185,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase() == "!cmds"
         ) {
             client.raw(
-                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current Commands: !game - Current Game aly is playing.`
+                `/me [🤖]: Current Commands: !game - Current Game aly is playing.`
             )
         }
     if (

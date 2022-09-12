@@ -118,7 +118,8 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         message.toLowerCase().includes("what game r u") ||
         message.toLowerCase().includes("what game is that") ||
         message.toLowerCase().includes("game called") ||
-        message.toLowerCase().includes("game name")
+        message.toLowerCase().includes("game name") ||
+		message.toLowerCase().includes("what is this game")
     ) {
         const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
         const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId})
@@ -205,8 +206,8 @@ client.on("raided", (channel, username, viewers, method) => {
 });
 
 client.on("subgift", (channel, username, viewers, method) => {
-    client.say(CHANNEL_NAME, `@${username} thanks for gifting a sub to @${method}. aly1263Blink`);
-    client.say(CHANNEL_NAME, `@${username} thanks for gifting a sub to @${method}. aly1263Blink`);
+    client.say(CHANNEL_NAME, `@${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
+    client.say(CHANNEL_NAME, `@${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
 });
 
 client.on("cheer", (channel, username, viewers, method, userstate) => {

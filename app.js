@@ -142,6 +142,15 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
 client.on("message", async (channel, userstate, message, self, viewers) => {
     const twitchUsername = userstate["username"];
+    const isVip = (() => {
+        if (userstate["badges"] && userstate["badges"].vip == 1) {
+          return true;
+        } else {
+          return false;
+        }
+      })();
+      
+      const isMod = userstate["mod"];
    
     if (
         message.toLowerCase().includes("can i join") ||
@@ -157,7 +166,9 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
     }
 
     if (message.includes("***")) {
-        client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+        if (!isVip) {
+            client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+        }
     }
 
     if (

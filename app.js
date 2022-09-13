@@ -149,7 +149,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
           return false;
         }
       })();
-      
+
       const isMod = userstate["mod"];
    
     if (
@@ -167,7 +167,9 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
     if (message.includes("***")) {
         if (!isVip) {
-            client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+            if (!isMod) {
+                client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+            }
         }
     }
 

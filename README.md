@@ -6,13 +6,13 @@
 ### Packages
 
 ```bash
-sudo apt npm install dotenv fs node-fetch spotify-buddylist string-similarity tmi.js ws
+sudo npm install dotenv fs node-fetch spotify-buddylist string-similarity tmi.js ws
 ```
 
 ### Running Bot
 
 ```bash
-sudo apt npm install -g pm2 && sudo apt npm install nodemon -g
+sudo npm install -g pm2 && sudo apt npm install nodemon -g
 ```
 
 ### Starting Bot

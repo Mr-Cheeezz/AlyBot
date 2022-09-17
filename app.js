@@ -69,15 +69,15 @@ setInterval(async () => {
     }
 }, 9 * 30 * 1000);
 
-setInterval(async () => {
-    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+// setInterval(async () => {
+//     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 
-    const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
+//     const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
 
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-        client.say(CHANNEL_NAME, `/me [🤖]: Aly is currently playing ${robloxGame}`)
-    }
-}, 9 * 60 * 1000);
+//     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
+//         client.say(CHANNEL_NAME, `/me [🤖]: Aly is currently playing ${robloxGame}`)
+//     }
+// }, 9 * 60 * 1000);
 
 setInterval(async () => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
@@ -490,7 +490,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
 client.on("raided", (channel, username, viewers, method) => { 
     if (SETTINGS.ks == false) {
-        if (viewers > 4) {
+        if (viewers >= 5) {
             client.say(CHANNEL_NAME, `/me [🤖]: Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
         }
     }

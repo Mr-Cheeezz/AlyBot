@@ -49,7 +49,7 @@ const client = new tmi.Client({
 client.connect();
 
 client.on("connected", (channel, username, viewers, method) => {
-    // client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
+    client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
 });
 
 setInterval(async () => {

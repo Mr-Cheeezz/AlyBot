@@ -167,7 +167,7 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
     if (message.includes("***")) {
         if (!isVip) {
-            if (!isMod) {
+            if (!isMod || !isVip) {
                 client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
             }
         }

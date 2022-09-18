@@ -12,7 +12,7 @@ import stringSimilarity from "string-similarity";
 import * as ROBLOX_FUNCTIONS from "./Functions/roblox.js";
 import * as TWITCH_FUNCTIONS from "./Functions/twitch.js";
 
-const alyId = 72121088
+const alyId = 72121088 // roblox id for getting game and playtime
 
 import { join } from "path";
 import { setEngine, verify } from "crypto";
@@ -26,11 +26,11 @@ import { resourceLimits } from "worker_threads";
 
 const COOKIE = process.env.COOKIE;
 
-const BOT_OAUTH = process.env.BOT_OAUTH;
-const BOT_NAME = process.env.BOT_NAME;
-const BOT_ID = process.env.BOT_ID;
+const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions
+const BOT_NAME = process.env.BOT_NAME; // bot username
+const BOT_ID = process.env.BOT_ID; // bot uid
 
-const CHANNEL_NAME = process.env.CHANNEL_NAME;
+const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
 const CHANNEL_ID = process.env.CHANNEL_ID;
 
 let SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
@@ -240,7 +240,7 @@ async function updateMode(client, message, twitchUsername, userstate) {
   
     if (!isValidMode)
       return client.raw(
-        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: ${message} is not a valid mode. Valid Modes: !join.on, !link.on !1v1.on, !ticket.on, !gamble.on`
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: ${message} is not a valid mode. Valid Modes: !join.on | !link.on | !1v1.on`
       );
     if (SETTINGS.currentMode == messageArray[0])
       return client.raw(
@@ -317,13 +317,19 @@ async function newUserHandler(client, message, twitchUsername, isFirstMessage, u
   
         var randomGreeting =
         responses[Math.floor(Math.random() * responses.length)];
-        await setTimeout(Math.floor(Math.random() * 10) * 1000)
+        await setTimeout(Math.floor(Math.random() * 15) * 1000)
         client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${randomGreeting}`);
     }
 }
 
 
-client.on("message", async (channel, userstate, message, self, viewers) => {
+client.on("message", async (
+  channel,
+  userstate,
+  message,
+  self,
+  viewers
+  ) => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
     const isFirstMessage = userstate["first-msg"];
     const twitchUsername = userstate["username"];
@@ -349,14 +355,12 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
 
       const isMod = userstate["mod"];
 
-      const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
-      const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId})
-      const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes})
+      const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
+      const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId});
+      const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
 
       if (SETTINGS.ks == false) {
-        if (message.toLowerCase() == "!game" || message.toLowerCase() == "1game") {
-  
-      
+        if (message.toLowerCase() == "!game" || message.toLowerCase() == "1game") {      
       
             if (onlineStatus > 30) {
               return client.raw(
@@ -370,7 +374,32 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
             }
         
             return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`); 
-            }   
+            }
+            if (message.toLowerCase() == "!gamelink") {
+              if (locationId == '8343259840') {
+                return client.raw(
+                  `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current game link -> roblox.com/games/4588604953`)};
+              if (locationId == '6839171747') {
+                return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current game link -> roblox.com/games/6516141723`)};
+        
+              // if (SETTINGS.currentMode == "!link.on") {
+              //   if (SETTINGS.currentLink != null) {
+              //     return client.raw(
+              //       `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current game link -> ${currentLink}`
+              //     );
+              //   }
+              // }
+              if (onlineStatus > 30) {
+                return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currenly offline so there is no game link.`
+                );
+              }
+              if (location != 'Website') {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current game link -> roblox.com/games/${locationId}`
+                );
+                return
+              }
+              return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Aly is currently switching games.`);
+            }
         if (!isMod || !isBroadcaster) {
             if (
                 message.toLowerCase().includes("what game is this") ||
@@ -395,15 +424,10 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
                   return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);            
             }
         }
-  
-      if (message.includes("***")) {
-        if (!isMod || !isVip || !isBroadcaster) {
-            client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
-        }
-      }
 
-      if (!isMod || !isVip || !isBroadcaster) {
-        if (
+
+        if (!isMod || !isVip || !isBroadcaster) {
+          if (
             message.toLowerCase().includes("can you add me") ||
             message.toLowerCase().includes("can you friend me") ||
             message.toLowerCase().includes("how to be friend") ||
@@ -416,6 +440,9 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         ) {
             client.say(CHANNEL_NAME, `/me !add @${twitchUsername}`);
         }
+        if (message.includes("***")) {
+          client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+        }
       }
 
       if (!isMod) {
@@ -425,14 +452,32 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
             client.say(CHANNEL_NAME, `/me !time @${twitchUsername}`);
         }
       }
-  
+      if (!isMod || !isBroadcaster || !isVip) {
+        if (
+          message.toLowerCase().includes("can i join") ||
+          message.toLowerCase().includes("can i play") ||
+          message.toLowerCase().includes("how to play") ||
+          message.toLowerCase().includes("how to join") ||
+          message.toLowerCase().includes("giv link") ||
+          message.toLowerCase().includes("give link") ||
+          message.toLowerCase().includes("can we join") ||
+          message.toLowerCase().includes("how do i join") ||
+          message.toLowerCase().includes("can we plat tog")
+        ) {
+          if (SETTINGS.currentMode == "!join.on") {
+            client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`)
+          } else if (SETTINGS.currentMode == "!link.on") {
+            client.say(CHANNEL_NAME, `@${twitchUsername}, Type !link to get the link to join`)
+          }
+        }
+      } 
       if (
           message.toLowerCase() == "!commands" ||
           message.toLowerCase() == "!cmds"
           ) {
               client.raw(
                   `/me [🤖]: Current Commands: !game - Current Game aly is playing.`
-              )
+              );
           }
       if (
           message.toLowerCase().includes("what song is this") ||
@@ -483,6 +528,9 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
                 }
                 client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: The bot is currently in ${SETTINGS.currentMode} mode.`);
                 return
+            }
+            if (message.toLowerCase() == "!validmodes") {
+              client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Valid Modes: !join.on | !link.on | !1v1.on`);
             }
         }
     }
@@ -549,294 +597,3 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
         }
     }
 });
-async function liveUpHandler() {
-    // TO DO = first person to go to stream gets free channel points
-    client.say(
-      `${CHANNEL_NAME}`,
-      `${CHANNEL_NAME}, is now live. Logging will start ${
-        WAIT_REGISTER / (60 * 1000)
-      } minutes after this point to avoid false logging.`
-    );
-    await setTimeout(WAIT_REGISTER);
-    if (await TWITCH_FUNCTIONS.isLive()) {
-      client.say(
-        `${CHANNEL_NAME}`,
-        `Logging now starts. There has been ${streamNumber} number of streams since logging started and this stream will be ${
-          streamNumber + 1
-        }`
-      );
-      const time = new Date();
-      const startTime = time.getTime() - WAIT_REGISTER;
-      streamNumber++;
-      STREAMS[streamNumber] = STREAMS[1];
-      STREAMS[streamNumber]["date"] = time;
-      STREAMS[streamNumber]["day"] = time.getDay();
-      STREAMS[streamNumber]["ISODate"] = time.toISOString();
-      STREAMS[streamNumber]["streamStart"] = time.getTime();
-      fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
-    } else {
-      client.say(`${CHANNEL_NAME}`, "false log.");
-    }
-}
-  
-async function liveDownHandler() {
-    if (await TWITCH_FUNCTIONS.isLive()) {
-      await setTimeout(WAIT_REGISTER / 100);
-      client.say(
-        `${CHANNEL_NAME}`,
-        `${CHANNEL_NAME}, is now offline. Logging has stopped.`
-      );    
-      const endTime = new Date().getTime();
-      STREAMS[streamNumber]["streamEnd"] = endTime;
-      STREAMS[streamNumber]["repeatLengthOffenders"] = {};
-      STREAMS[streamNumber]["repeatSpamOffenders"] = {};
-      fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
-    } else {
-      client.say("false log.");
-    }
-}
-  
-var pubsub;
-const myname = CHANNEL_NAME;
-  
-var ping = {};
-ping.pinger = false;
-ping.start = function () {
-  if (ping.pinger) {
-    clearInterval(ping.pinger);
-  }
-  ping.sendPing();
-  
-    ping.pinger = setInterval(function () {
-      setTimeout(function () {
-        ping.sendPing();
-      }, Math.floor(Math.random() * 1000 + 1));
-    }, 4 * 60 * 1000);
-  };
-  ping.sendPing = function () {
-    try {
-      pubsub.send(
-        JSON.stringify({
-          type: "PING",
-        })
-      );
-      ping.awaitPong();
-    } catch (e) {
-      console.log(e);
-  
-      pubsub.close();
-      StartListener();
-    }
-  };
-  ping.awaitPong = function () {
-    ping.pingtimeout = setTimeout(function () {
-      console.log("WS Pong Timeout");
-      pubsub.close();
-      StartListener();
-    }, 10000);
-};
-  
-  ping.gotPong = function () {
-    clearTimeout(ping.pingtimeout);
-};
-  
-  var requestListen = function (topics, token) {
-    let pck = {};
-    pck.type = "LISTEN";
-    pck.nonce = myname + "-" + new Date().getTime();
-  
-    pck.data = {};
-    pck.data.topics = topics;
-    if (token) {
-      pck.data.auth_token = token;
-    }
-  
-    pubsub.send(JSON.stringify(pck));
-  };
-  
-  var StartListener = function () {
-    pubsub = new WebSocket("wss://pubsub-edge.twitch.tv");
-    pubsub
-      .on("close", function () {
-        console.log("Disconnected");
-        StartListener();
-      })
-      .on("open", function () {
-        ping.start();
-        runAuth();
-      });
-    pubsub.on("message", async function (raw_data, flags) {
-      SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
-      var PData = JSON.parse(raw_data);
-      if (PData.type == "RECONNECT") {
-        console.log("Reconnect");
-        pubsub.close();
-      } else if (PData.type == "PONG") {
-        ping.gotPong();
-      } else if (PData.type == "RESPONSE") {
-        console.log(PData);
-        console.log("RESPONSE: " + (PData.error ? PData.error : "OK"));
-      } else if (PData.type == "MESSAGE") {
-        PData = PData.data;
-        const pubTopic = PData.topic;
-        const pubMessage = PData.message;
-        const serverTime = pubMessage.server_time;
-        const type = JSON.parse(pubMessage).type;
-        if (type == "stream-up") {
-          // TO DO = first person to go to stream gets free channel points
-          client.say(CHANNEL_NAME, `/followersoff`);
-          liveUpHandler();
-        } else if (type == "stream-down") {
-          client.say(CHANNEL_NAME, `/followers`);
-          liveDownHandler();
-        } else if (type == "viewcount") {
-          STREAMS[streamNumber]["averageViewersPer30Seconds"] =
-            pubMessage.viewers;
-          const sum = 0;
-          for (const key in STREAMS[streamNumber]["averageViewersPer30Seconds"]) {
-            sum += STREAMS[key];
-          }
-          STREAMS[streamNumber]["averageviewers"] =
-            sum / Object.keys(STREAMS).length;
-          fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
-        } else if (type == "AD_POLL_CREATE") {
-          TWITCH_FUNCTIONS.onMultiplayerAdStart();
-        } else if (type == "AD_POLL_COMPLETE") {
-          var adData = pubMessage.data.poll;
-          TWITCH_FUNCTIONS.onMultiplayerAdEnd(adData);
-        }
-          if (JSON.parse(pubMessage).data.moderation_action == "untimeout") {
-            const untimedoutUser = JSON.parse(pubMessage).data.target_user_login;
-            FILTER_FUNCTIONS.onUntimedOut(untimedoutUser);
-          }
-        } else if (pubTopic == `stream-chat-room-v1.${CHANNEL_ID}`) {
-          // // if(pubMessage.data.room.modes.followers_)
-          // var modeData = JSON.parse(pubMessage).data.room.modes
-          // if (modeData.emote_only_mode_enabled == true) {
-          //   console.log('emote only enabled')
-          // } else if (modeData.subscribers_only_mode_enabled == true) {
-          //   console.log('sub only mode enabled')
-          // }
-        } else if (pubTopic == `ads.${CHANNEL_ID}`) {
-          if (SETTINGS.ks == false) {
-            client.say(
-              CHANNEL_NAME,
-              `An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
-            );
-          }
-          
-        } else if (pubTopic == `ads-manager.${CHANNEL_ID}`) {
-            if (SETTINGS.ks == false) {
-              client.say(
-                CHANNEL_NAME,
-                `An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
-              );
-            }
-        } else if (pubTopic == `hype-train-events-v1.${CHANNEL_ID}`) {
-          if (SETTINGS.ks == false) {
-            client.say(
-              CHANNEL_NAME,
-              `A HYPE TRAIN PagMan [test message]`
-            )
-          }
-        } else if (pubTopic == `community-moments-channel-v1.${CHANNEL_ID}`) {
-          if (SETTINGS.ks == false) {
-            client.say(
-              CHANNEL_NAME,
-              `A new moment tibb12Tabbman everyone claim it while you can tibb12Pog .`
-            )
-          }
-        }
-    });
-};
-
-var runAuth = function () {
-    requestListen(
-      [
-        // `activity-feed-alerts-v2.${CHANNEL_ID}`,
-        `ads.${CHANNEL_ID}`,
-        `ads-manager.${CHANNEL_ID}`,
-        // `channel-ad-poll-update-events.${CHANNEL_ID}`,
-        // `ad-property-refresh.${CHANNEL_ID}`,
-        // `automod-levels-modification.${CHANNEL_ID}`,
-        // `automod-queue.${CHANNEL_ID}`,
-        `leaderboard-events-v1.${CHANNEL_ID}`,
-        // `bits-campaigns-v1.${CHANNEL_ID}`,
-        // `campaign-events.${CHANNEL_ID}`,
-        // `user-campaign-events.${CHANNEL_ID}`,
-        // `celebration-events-v1.${CHANNEL_ID}`,
-        // `channel-bits-events-v1.${CHANNEL_ID}`,
-        // `channel-bit-events-public.${CHANNEL_ID}`,
-        // `channel-event-updates.${CHANNEL_ID}`,
-        // `channel-squad-invites.${CHANNEL_ID}`,
-        // `channel-squad-updates.${CHANNEL_ID}`,
-        // `channel-subscribe-events-v1.${CHANNEL_ID}`,
-        // `channel-cheer-events-public-v1.${CHANNEL_ID}`,
-        // `broadcast-settings-update.${CHANNEL_ID}`,
-        // `channel-drop-events.${CHANNEL_ID}`,
-        // `channel-bounty-board-events.cta.${CHANNEL_ID}`,
-        // `chatrooms-user-v1.505216805`,
-        // `community-boost-events-v1.${CHANNEL_ID}`,
-        `community-moments-channel-v1.${CHANNEL_ID}`,
-        // `community-moments-user-v1.${CHANNEL_ID}`,
-        // `community-points-broadcaster-v1.${CHANNEL_ID}`,
-        `community-points-channel-v1.${CHANNEL_ID}`,
-        // `community-points-user-v1.${CHANNEL_ID}`,
-        `predictions-channel-v1.${CHANNEL_ID}`,
-        // `predictions-user-v1.${CHANNEL_ID}`,
-        // `creator-goals-events-v1.${CHANNEL_ID}`,
-        // `dashboard-activity-feed.${CHANNEL_ID}`,
-        // `dashboard-alert-status.${CHANNEL_ID}`,
-        // `dashboard-multiplayer-ads-events.${CHANNEL_ID}`,
-        // `emote-uploads.${CHANNEL_ID}`,
-        // `emote-animations.${CHANNEL_ID}`,
-        // `extension-control.upload.${CHANNEL_ID}`,
-        // `follows.${CHANNEL_ID}`,
-        // `friendship.${CHANNEL_ID}`,
-        `hype-train-events-v1.${CHANNEL_ID}`,
-        // `user-image-update.${CHANNEL_ID}`,
-        // `low-trust-users.${CHANNEL_ID}`,
-        // `midnight-squid-recipient-v1.${CHANNEL_ID}`,
-        // //`chat_moderator_actions.${CHANNEL_ID}`
-        `chat_moderator_actions.${BOT_ID}.${CHANNEL_ID}`,
-        // `moderator-actions.${CHANNEL_ID}`,
-        // `multiview-chanlet-update.${CHANNEL_ID}`,
-        // `channel-sub-gifts-v1.${CHANNEL_ID}`,
-        // `onsite-notifications.${CHANNEL_ID}`,
-        // `payout-onboarding-events.${CHANNEL_ID}`,
-        `polls.${CHANNEL_ID}`,
-        // `presence.${CHANNEL_ID}`,
-        // `prime-gaming-offer.${CHANNEL_ID}`,
-        // `channel-prime-gifting-status.${CHANNEL_ID}`,
-        // `pv-watch-party-events.${CHANNEL_ID}`,
-        // `private-callout.${CHANNEL_ID}`,
-        // `purchase-fulfillment-events.${CHANNEL_ID}`,
-        // `raid.${CHANNEL_ID}`,
-        // `radio-events-v1.${CHANNEL_ID}`,
-        // `rocket-boost-channel-v1.${CHANNEL_ID}`,
-        // `squad-updates.${CHANNEL_ID}`,
-        // `stream-change-v1.${CHANNEL_ID}`,
-        // `stream-change-by-channel.${CHANNEL_ID}`,
-        `stream-chat-room-v1.${CHANNEL_ID}`,
-        // `subscribers-csv-v1.${CHANNEL_ID}`,
-        `channel-unban-requests.${BOT_ID}.${CHANNEL_ID}`,
-        // `user-unban-requests.${CHANNEL_ID}`,
-        `upload.${CHANNEL_ID}`,
-        // `user-bits-updates-v1.${CHANNEL_ID}`,
-        // `user-commerce-events.${CHANNEL_ID}`,
-        // `user-crate-events-v1.${CHANNEL_ID}`,
-        // `user-drop-events.${CHANNEL_ID}`,
-        // `user-moderation-notifications.${CHANNEL_ID}`,
-        // `user-preferences-update-v1.${CHANNEL_ID}`,
-        // `user-properties-update.${CHANNEL_ID}`,
-        // `user-subscribe-events-v1.${CHANNEL_ID}`,
-        `video-playback.${CHANNEL_ID}`,
-        `video-playback-by-id.${CHANNEL_ID}`,
-        // `video-thumbnail-processing.${CHANNEL_ID}`,
-        `whispers.${BOT_ID}`,
-      ],
-      BOT_OAUTH
-    );
-};
-//TIBB_TOKEN
-StartListener();

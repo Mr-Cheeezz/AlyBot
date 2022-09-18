@@ -477,7 +477,7 @@ client.on("message", async (
           message.toLowerCase() == "!coms" 
           ) {
               client.raw(
-                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Click here for commands: rentry.co/mainsbot.`
+                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Click here for commands: rentry.co/mainsbot`
               );
           }
       if (

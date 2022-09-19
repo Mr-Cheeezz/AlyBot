@@ -332,6 +332,7 @@ client.on("message", async (
   ) => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
     const isFirstMessage = userstate["first-msg"];
+    const twitchUserId = userstate["user-id"];
     const twitchUsername = userstate["username"];
     const isSubscriber = userstate["subscriber"];
     const subscriberMonths = (() => {
@@ -341,8 +342,10 @@ client.on("message", async (
           return null;
         }
       })();
-    const isBroadcaster = twitchUsername == "aly1263"
-    const twitchUserId = userstate["user-id"];
+    const isBroadcaster = 
+    twitchUsername == CHANNEL_NAME.toLowerCase();
+    const isAdmin =
+    twitchUserId == BOT_ID;
     const hexNameColor = userstate.color;
     const lowerMessage = message.toLowerCase();
     const isVip = (() => {
@@ -503,14 +506,14 @@ client.on("message", async (
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);
     }
-    if (isBroadcaster || isMod || twitchUserId == BOT_ID) {
+    if (isBroadcaster || isMod || isAdmin) {
         ksHandler(client, lowerMessage, twitchUsername, userstate);
         updateMode(client, message, twitchUsername, userstate);
         timerHandler(client, lowerMessage, twitchUsername, userstate);
         customModFunctions(client, message, twitchUsername, userstate);
         newLinkHandler(client, message, twitchUsername, userstate);
     }
-    if (isMod || isBroadcaster || twitchUserId == BOT_ID) {
+    if (isMod || isBroadcaster || isAdmin) {
         if (SETTINGS.ks == false) {
             if (message.toLowerCase() == "!currentmode") {
                 SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
@@ -559,10 +562,10 @@ client.on("cheer", (channel, username, viewers, method, userstate) => {
     }
 });
 
-client.on("resub", (channel, username, viewers, method, months) => {
+client.on("resub", (channel, username, viewers, method, months, month) => {
     if (SETTINGS.ks == false) {
-        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${months} @${username}. aly1263Vibe`);
-        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${months} @${username}. aly1263Vibe`);
+        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${month} @${username}. aly1263Vibe`);
+        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${month} @${username}. aly1263Vibe`);
     }
 });
 

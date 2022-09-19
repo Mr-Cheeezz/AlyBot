@@ -396,7 +396,7 @@ client.on("message", async (
                 return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currenly offline so there is no game link.`
                 );
               }
-              if (location != 'Website') {
+              if (robloxGame != 'Website') {
                 client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current game link -> roblox.com/games/${locationId}`
                 );
                 return

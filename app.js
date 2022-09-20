@@ -49,11 +49,13 @@ const client = new tmi.Client({
 client.connect();
 
 client.on("connected", (channel, username, viewers, method) => {
-    client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
+    // client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
 });
 
 setInterval(async () => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+
+    const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});    
 
     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
         var currentMode = SETTINGS.currentMode.replace(".on", "");
@@ -63,7 +65,9 @@ setInterval(async () => {
     
         for (const key in timerCommands) {
           if (key == currentMode) {
-            client.say(CHANNEL_NAME, `/me [🤖]: ${timerCommands[key]}`);
+            if (robloxGame != 'Website') {
+              client.say(CHANNEL_NAME, `/me [🤖]: ${timerCommands[key]}`);
+            }
           }
         }
     }

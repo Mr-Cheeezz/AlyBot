@@ -154,6 +154,34 @@ async function timerHandler(client, lowerMessage, twitchUsername, userstate) {
     }
 }
 
+async function keywordHandler(client, lowerMessage, twitchUsername, userstate) {
+  if (lowerMessage == "!keywords.on") {
+    if (SETTINGS.keywords == true) {
+      return client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Keywords are already enabled.`
+      );
+    } else if (SETTINGS.timers == false) {
+      SETTINGS.keywords = true;
+      fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
+      return client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :@${CHANNEL_NAME}, Keywords are now enabled.`
+      );
+    }
+  } else if (lowerMessage == "!keywords.off") {
+    if (SETTINGS.keywords == false) {
+      return client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Keywords are already disabled.`
+      );
+    } else if (SETTINGS.keywords == true) {
+      SETTINGS.keywords = false;
+      fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
+      return client.raw (
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :@${CHANNEL_NAME}, Keywords are now disabled.`
+      );
+    }
+  }
+}
+
 let shouldChangeLink = true;
 
 async function newLinkHandler(client, message, twitchUsername, userstate) {
@@ -533,7 +561,7 @@ client.on("message", async (
         }
       })();
     const isBroadcaster = 
-    twitchUsername == CHANNEL_NAME.toLowerCase();
+    twitchUsername == CHANNEL_NAME;
     const isAdmin =
     twitchUserId == BOT_ID;
     const isMod = userstate["mod"];
@@ -594,94 +622,85 @@ client.on("message", async (
               }
               return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);
             }
-        if (!isMod || !isBroadcaster) {
-            if (
-                message.toLowerCase().includes("what game is this") ||
-                message.toLowerCase().includes("what game r u") ||
-                message.toLowerCase().includes("what game is that") ||
-                message.toLowerCase().includes("game called") ||
-                message.toLowerCase().includes("game name") ||
-                message.toLowerCase().includes("what is this game")
+            if (SETTINGS.keywords == true) {
+              if (!isMod || !isBroadcaster) {
+                if (
+                    message.toLowerCase().includes("what game is this") ||
+                    message.toLowerCase().includes("what game r u") ||
+                    message.toLowerCase().includes("what game is that") ||
+                    message.toLowerCase().includes("game called") ||
+                    message.toLowerCase().includes("game name") ||
+                    message.toLowerCase().includes("what is this game")
+                ) {
+            
+                    if (onlineStatus > 30) {
+                        return client.raw(
+                          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
+                      }
+                      console.log(robloxGame)
+                      if (robloxGame != 'Website') {
+                       client.raw(
+                        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${robloxGame}.`); 
+                      return
+                      }
+                  
+                      return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);            
+                }
+              }
+            if (!isMod || !isVip || !isBroadcaster) {
+              if (
+                message.toLowerCase().includes("can you add me") ||
+                message.toLowerCase().includes("can you friend me") ||
+                message.toLowerCase().includes("how to be friend") ||
+                message.toLowerCase().includes("pls add me") ||
+                message.toLowerCase().includes("ad me") ||
+                message.toLowerCase().includes("please friend me") ||
+                message.toLowerCase().includes("accept my friend request") ||
+                message.toLowerCase().includes("pls friend me") ||
+                message.toLowerCase().includes("send you a friend request")
             ) {
-        
-                if (onlineStatus > 30) {
-                    return client.raw(
-                      `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
-                  }
-                  console.log(robloxGame)
-                  if (robloxGame != 'Website') {
-                   client.raw(
-                    `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently playing ${robloxGame}.`); 
-                  return
-                  }
-              
-                  return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);            
+                client.say(CHANNEL_NAME, `/me !add @${twitchUsername}`);
             }
-        }
-
-
-        if (!isMod || !isVip || !isBroadcaster) {
+            if (message.includes("***")) {
+              client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
+            }
+          }
+    
+          if (!isMod) {
+            if (
+                message.toLowerCase().includes("what time is it")
+            ) {
+                client.say(CHANNEL_NAME, `/me !time @${twitchUsername}`);
+            }
+          }
+          if (!isMod || !isBroadcaster || !isVip) {
+            if (
+              message.toLowerCase().includes("can i join") ||
+              message.toLowerCase().includes("can i play") ||
+              message.toLowerCase().includes("how to play") ||
+              message.toLowerCase().includes("how to join") ||
+              message.toLowerCase().includes("giv link") ||
+              message.toLowerCase().includes("give link") ||
+              message.toLowerCase().includes("can we join") ||
+              message.toLowerCase().includes("how do i join") ||
+              message.toLowerCase().includes("can we plat tog")
+            ) {
+              if (SETTINGS.currentMode == "!join.on") {
+                client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`)
+              } else if (SETTINGS.currentMode == "!link.on") {
+                client.say(CHANNEL_NAME, `@${twitchUsername}, Type !link to get the link to join`)
+              }
+            }
+          } 
           if (
-            message.toLowerCase().includes("can you add me") ||
-            message.toLowerCase().includes("can you friend me") ||
-            message.toLowerCase().includes("how to be friend") ||
-            message.toLowerCase().includes("pls add me") ||
-            message.toLowerCase().includes("ad me") ||
-            message.toLowerCase().includes("please friend me") ||
-            message.toLowerCase().includes("accept my friend request") ||
-            message.toLowerCase().includes("pls friend me") ||
-            message.toLowerCase().includes("send you a friend request")
-        ) {
-            client.say(CHANNEL_NAME, `/me !add @${twitchUsername}`);
-        }
-        if (message.includes("***")) {
-          client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
-        }
-      }
-
-      if (!isMod) {
-        if (
-            message.toLowerCase().includes("what time is it")
-        ) {
-            client.say(CHANNEL_NAME, `/me !time @${twitchUsername}`);
-        }
-      }
-      if (!isMod || !isBroadcaster || !isVip) {
-        if (
-          message.toLowerCase().includes("can i join") ||
-          message.toLowerCase().includes("can i play") ||
-          message.toLowerCase().includes("how to play") ||
-          message.toLowerCase().includes("how to join") ||
-          message.toLowerCase().includes("giv link") ||
-          message.toLowerCase().includes("give link") ||
-          message.toLowerCase().includes("can we join") ||
-          message.toLowerCase().includes("how do i join") ||
-          message.toLowerCase().includes("can we plat tog")
-        ) {
-          if (SETTINGS.currentMode == "!join.on") {
-            client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`)
-          } else if (SETTINGS.currentMode == "!link.on") {
-            client.say(CHANNEL_NAME, `@${twitchUsername}, Type !link to get the link to join`)
-          }
-        }
-      } 
-      if (
-          message.toLowerCase() == "!commands" ||
-          message.toLowerCase() == "!cmds" ||
-          message.toLowerCase() == "!coms" 
+              message.toLowerCase().includes("what song is this") ||
+              message.toLowerCase().includes("song name") ||
+              message.toLowerCase().includes("what is this song") ||
+              message.toLowerCase().includes("what is this music") 
           ) {
-              client.raw(
-                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Click here for commands: rentry.co/mainsbot`
-              );
+              client.say(CHANNEL_NAME, `/me !song @${twitchUsername}`)
           }
-      if (
-          message.toLowerCase().includes("what song is this") ||
-          message.toLowerCase().includes("song name") ||
-          message.toLowerCase().includes("what is this song") ||
-          message.toLowerCase().includes("what is this music") 
-      ) {
-          client.say(CHANNEL_NAME, `/me !song @${twitchUsername}`)
-      }
+        }
       if (message.toLowerCase() == "!namecolor") {
         client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Your username hex code is ${hexNameColor}.`);
       }
@@ -693,6 +712,15 @@ client.on("message", async (
             client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: You are currently subscribed to ${CHANNEL_NAME} for ${subscriberMonths} months.`);
         }
       }
+      if (
+        message.toLowerCase() == "!commands" ||
+        message.toLowerCase() == "!cmds" ||
+        message.toLowerCase() == "!coms" 
+        ) {
+            client.raw(
+              `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Click here for commands: rentry.co/mainsbot`
+            );
+        }
     }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);
@@ -701,11 +729,10 @@ client.on("message", async (
     if (isBroadcaster || isMod || isAdmin) {
         ksHandler(client, lowerMessage, twitchUsername, userstate);
         updateMode(client, message, twitchUsername, userstate);
-        if (!isAdmin) {
-          newLinkHandler(client, message, twitchUsername, userstate);
-        }
         timerHandler(client, lowerMessage, twitchUsername, userstate);
+        keywordHandler(client, lowerMessage, twitchUsername, userstate);
         customModFunctions(client, message, twitchUsername, userstate);
+        newLinkHandler(client, message, twitchUsername, userstate);
     }
     if (isMod || isBroadcaster || isAdmin) {
         if (SETTINGS.ks == false) {
@@ -729,6 +756,19 @@ client.on("message", async (
             }
             if (message.toLowerCase() == "!validmodes") {
               client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Valid Modes: !join.on | !link.on | !1v1.on`);
+            }
+            if (lowerMessage == "!settings") {
+              SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+        
+              if (SETTINGS.ks == false && SETTINGS.timers == true && SETTINGS.keywords == true) {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current Settings: Killswitch - Off | Timers - On | Keywords - On`);
+              } else if (SETTINGS.ks == false && SETTINGS.timers == false && SETTINGS.keywords == true) {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current Settings: Killswitch - Off | Timers - Off | Keywords - On`);
+              } else if (SETTINGS.ks == false && SETTINGS.timers == false && SETTINGS.keywords == false) {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current Settings: Killswitch - Off | Timers - Off | Keywords - Off`);
+              } else if (SETTINGS.ks == false && SETTINGS.timers == false && SETTINGS.keywords == false) {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :Current Settings: Killswitch - Off | Timers - Off | Keywords - Off`);
+              }
             }
         }
     }

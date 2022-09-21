@@ -867,7 +867,7 @@ var messageArray = ([] = message.toLowerCase().split(" "));
     if (isBroadcaster || isMod || isAdmin) {
       if (SETTINGS.currentMode == "!link.on") {
         if (SETTINGS.currentLink != null) {
-          if (messageArray[0] == "!l" && messageArray[1] == null) {
+          if (messageArray[0] == "!l" && messageArray[1] != null) {
             client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
           }
           if (messageArray[0] == "!l") {

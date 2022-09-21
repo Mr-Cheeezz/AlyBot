@@ -185,26 +185,26 @@ async function keywordHandler(client, lowerMessage, twitchUsername, userstate) {
 let shouldChangeLink = true;
 
 async function newLinkHandler(client, message, twitchUsername, userstate) {
-    message = message.trimStart();
-    message = [] = message.split(" ");
-    message = message[0];
+  message = message.trimStart();
+  message = [] = message.split(" ");
+  message = message[0];
 
-    const isValidLink =
-        message.includes("privateServerLinkCode") &&
-        message.includes("roblox.com/games");
-    const currentMode = SETTINGS.currentMode;
+  const isValidLink =
+      message.includes("privateServerLinkCode") &&
+      message.includes("roblox.com/games");
+  const currentMode = SETTINGS.currentMode;
 
-    if (isValidLink && shouldChangeLink == true) {
-        SETTINGS.currentLink = message;
-        if (currentMode == "!link.on") {
-        } else {
-          SETTINGS.currentMode = "!link.on";
-        }
-        fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
-        shouldChangeLink = false;
-        await setTimeout(1 * 60 * 1000);
-        shouldChangeLink = true;
-    }
+  if (isValidLink && shouldChangeLink == true) {
+      SETTINGS.currentLink = message;
+      if (currentMode == "!link.on") {
+      } else {
+        SETTINGS.currentMode = "!link.on";
+      }
+      fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
+      shouldChangeLink = false;
+      await setTimeout(1 * 60 * 1000);
+      shouldChangeLink = true;
+  }
 }
 async function customModFunctions(client, message, twitchUsername, userstate) {
     var messageArray = ([] = message.toLowerCase().split(" "));
@@ -846,6 +846,7 @@ client.on("hosting", async (channel, username, viewers, method, userstate) => {
 });
 
 client.on("message", async (channel, userstate, message, self, viewers) => {
+var messageArray = ([] = message.toLowerCase().split(" "));
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
     const isMod = userstate["mod"];
     const twitchUserId = userstate["user-id"];
@@ -857,11 +858,26 @@ client.on("message", async (channel, userstate, message, self, viewers) => {
     const msg = message.toLowerCase();
   if (SETTINGS.ks == false) {
     if (msg == "!link" || msg == "!server" || msg == "!vip") {
-      if (SETTINGS.currentMode == "!link.on" || SETTINGS.currentLink != null) {
+      if (SETTINGS.currentMode == "!link.on") {
         client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
       } else {
         client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: There is not currently a link.`);
       }
     }
-  }  
+    if (isBroadcaster || isMod || isAdmin) {
+      if (SETTINGS.currentMode == "!link.on") {
+        if (SETTINGS.currentLink != null) {
+          if (messageArray[0] == "!l" && messageArray[1] == null) {
+            client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
+          }
+          if (messageArray[0] == "!l") {
+            client.say(CHANNEL_NAME, `[🤖]: ${messageArray[1]} Current Link -> ${SETTINGS.currentLink}`);
+          }
+        }
+        if (SETTINGS.currentLink == null) {
+          client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: There is not currently a link.`);
+        }
+      }
+    }
+  }
 });

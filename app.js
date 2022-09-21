@@ -172,6 +172,10 @@ async function newLinkHandler(client, message, twitchUsername, userstate) {
         } else {
           SETTINGS.currentMode = "!link.on";
         }
+
+        if (isValidLink) {
+          client.say(CHANNEL_NAME, `@${twitchUsername} Link Updated.`)
+        }
         fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
         shouldChangeLink = false;
         await setTimeout(1 * 60 * 1000);
@@ -532,6 +536,7 @@ client.on("message", async (
     twitchUsername == CHANNEL_NAME.toLowerCase();
     const isAdmin =
     twitchUserId == BOT_ID;
+    const isMod = userstate["mod"];
     const hexNameColor = userstate.color;
     const lowerMessage = message.toLowerCase();
     const isVip = (() => {
@@ -542,7 +547,7 @@ client.on("message", async (
         }
       })();
 
-      const isMod = userstate["mod"];
+
 
       const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
       const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId});
@@ -574,7 +579,7 @@ client.on("message", async (
               // if (SETTINGS.currentMode == "!link.on") {
               //   if (SETTINGS.currentLink != null) {
               //     return client.raw(
-              //       `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current game link -> ${currentLink}`
+              //       `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current game link -> ${SETTINGS.currentLink}`
               //     );
               //   }
               // }
@@ -696,9 +701,11 @@ client.on("message", async (
     if (isBroadcaster || isMod || isAdmin) {
         ksHandler(client, lowerMessage, twitchUsername, userstate);
         updateMode(client, message, twitchUsername, userstate);
+        if (!isAdmin) {
+          newLinkHandler(client, message, twitchUsername, userstate);
+        }
         timerHandler(client, lowerMessage, twitchUsername, userstate);
         customModFunctions(client, message, twitchUsername, userstate);
-        newLinkHandler(client, message, twitchUsername, userstate);
     }
     if (isMod || isBroadcaster || isAdmin) {
         if (SETTINGS.ks == false) {
@@ -778,14 +785,40 @@ client.on("hosting", async (channel, username, viewers, method, userstate) => {
         client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
     }
 });
+
 client.on("message", async (channel, userstate, message, self, viewers) => {
+var messageArray = ([] = message.toLowerCase().split(" "));
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+    const isMod = userstate["mod"];
+    const twitchUserId = userstate["user-id"];
+    const twitchUsername = userstate["username"];
+    const isBroadcaster = 
+    twitchUsername == CHANNEL_NAME.toLowerCase();
+    const isAdmin =
+    twitchUserId == BOT_ID;
     const msg = message.toLowerCase();
+  if (SETTINGS.ks == false) {
     if (msg == "!link" || msg == "!server" || msg == "!vip") {
-        if (SETTINGS.currentMode == "!link.on") {
-            client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
-        } else {
-            client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: [Error: There is not currently a link]`);
-        }
+      if (SETTINGS.currentMode == "!link.on") {
+        client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
+      } else {
+        client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: There is not currently a link.`);
+      }
     }
+    if (isBroadcaster || isMod || isAdmin) {
+      if (SETTINGS.currentMode == "!link.on") {
+        if (SETTINGS.currentLink != null) {
+          if (messageArray[0] == "!l" && messageArray[1] == null) {
+            client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
+          }
+          if (messageArray[0] == "!l") {
+            client.say(CHANNEL_NAME, `[🤖]: ${messageArray[1]} Current Link -> ${SETTINGS.currentLink}`);
+          }
+        }
+        if (SETTINGS.currentLink == null) {
+          client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: There is not currently a link.`);
+        }
+      }
+    }
+  }
 });

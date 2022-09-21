@@ -620,7 +620,7 @@ client.on("message", async (
             }
             if (SETTINGS.keywords == true) {
               const msg = message.toLowerCase();
-              if (!isMod || !isBroadcaster) {
+              if (!isMod || !isBroadcaster || !isAdmin) {
                 if (
                     message.toLowerCase().includes("what game is this") ||
                     message.toLowerCase().includes("what game r u") ||

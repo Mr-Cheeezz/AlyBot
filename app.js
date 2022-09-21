@@ -780,7 +780,8 @@ client.on("hosting", async (channel, username, viewers, method, userstate) => {
 });
 client.on("message", async (channel, userstate, message, self, viewers) => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
-    if (message.toLowerCase() == "!link") {
+    const msg = message.toLowerCase();
+    if (msg == "!link" || msg == "!server" || msg == "!vip") {
         if (SETTINGS.currentMode == "!link.on") {
             client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
         } else {

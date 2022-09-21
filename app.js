@@ -381,7 +381,7 @@ async function customUserFunctions(client, message, twitchUsername, userid, user
         const cpToHours = ROBLOX_FUNCTIONS.timeToAgo(test);
 
         client.raw(
-          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: IF ${sub}, it would take ${
+          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: If ${sub}, it would take ${
             cpToHours.timeString
           } to farm ${ROBLOX_FUNCTIONS.formatNumber(cp)} channel points.`
         );

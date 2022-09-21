@@ -49,7 +49,7 @@ const client = new tmi.Client({
 client.connect();
 
 client.on("connected", (channel, username, viewers, method) => {
-    // client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
+    client.say(CHANNEL_NAME, `/me [🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
 });
 
 setInterval(async () => {
@@ -326,6 +326,188 @@ async function newUserHandler(client, message, twitchUsername, isFirstMessage, u
     }
 }
 
+async function customUserFunctions(client, message, twitchUsername, userid, userstate) {
+  var messageArray = ([] = message.toLowerCase().split(" "));
+
+  if (messageArray[0] == "!cptotime") {
+    if (messageArray[1] == undefined) {
+      return client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Please specify an amount of channel points to convert to farming time. If you want you can also specify what tier you want to check, for example !cptotime 1000 tier1`
+      );
+    } else if (isNaN(messageArray[1]) == true) {
+      return client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Number of channel points must be a number.`
+      );
+    } else {
+      const cp = messageArray[1];
+
+      if (
+        messageArray[2] == "tier1" ||
+        messageArray[2] == "tier2" ||
+        messageArray[2] == "tier3" ||
+        messageArray[2] == "nosub"
+      ) {
+        let tierToCheck = messageArray[2];
+
+        const standardRate = 5.33333333;
+
+        const t1Rate = 5.3333333 * 1.2;
+        const t2Rate = 5.3333333 * 1.4;
+        const t3Rate = 5.3333333 * 2;
+
+        let rate;
+        let sub;
+
+        if (tierToCheck == "tier1") {
+          rate = t1Rate;
+          sub = "you had a Tier 1 sub";
+        } else if (tierToCheck == "tier2") {
+          rate = t2Rate;
+          sub = "you had a Tier 2 sub";
+        } else if (tierToCheck == "tier3") {
+          rate = t3Rate;
+          sub = "you had a Tier 3 sub";
+        } else if (tierToCheck == "nosub") {
+          rate = standardRate;
+          sub = "you had no sub";
+        }
+
+        const test = cp / rate / (60 * 24 * 365);
+
+        const cpToHours = ROBLOX_FUNCTIONS.timeToAgo(test);
+
+        client.raw(
+          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: IF ${sub}, it would take ${
+            cpToHours.timeString
+          } to farm ${ROBLOX_FUNCTIONS.formatNumber(cp)} channel points.`
+        );
+      } else {
+        const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(userid);
+
+        const tier = getSubStatus.data;
+
+        const standardRate = 5.33333333;
+
+        const t1Rate = 5.3333333 * 1.2;
+        const t2Rate = 5.3333333 * 1.4;
+        const t3Rate = 5.3333333 * 2;
+
+        let rate;
+        let sub;
+
+        if (tier.tier != null) {
+          if (tier == 1000) {
+            rate = t1Rate;
+            sub = "you're a tier 1 sub";
+          } else if (tier == 2000) {
+            rate = t2Rate;
+            sub = "you're a tier 2 sub";
+          } else if (tier == 3000) {
+            rate = t3Rate;
+            sub = "you're a tier 3 sub";
+          }
+        } else {
+          rate = standardRate;
+          sub = "you dont have a sub";
+        }
+
+        const test = cp / rate / (60 * 24 * 365);
+
+        const cpToHours = ROBLOX_FUNCTIONS.timeToAgo(test);
+
+        client.raw(
+          `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Since ${sub}, it would take ${
+            cpToHours.timeString
+          } to farm ${ROBLOX_FUNCTIONS.formatNumber(cp)} channel points.`
+        );
+
+        return;
+      }
+    }
+  } else if (messageArray[0] == "!whogiftedme") {
+    const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(userid);
+
+    const data = getSubStatus.data;
+
+    // if (data.length != 0) {
+    //   if (data[0].is_gift == false) {
+    //     return client.say(
+    //       CHANNEL_NAME,
+    //       `@${twitchUsername}, you were not gifted a sub, you subscribed yourself.`
+    //     );
+    //   }
+    // }
+    const channelEmotes = await TWITCH_FUNCTIONS.getChannelEmotes(userid);
+    const emoteData = channelEmotes.data;
+
+    let emoteTable = {
+      "Tier 1": [20],
+      "Tier 2": [40],
+      "Tier 3": [100],
+    };
+
+    for (let i = 0; i < emoteData.length; i++) {
+      const emote = emoteData[i];
+
+      const emoteTier = emote.tier;
+
+      if (emoteTier == 1000) {
+        emoteTable["Tier 1"].push(emote);
+      } else if (emoteTier == 2000) {
+        emoteTable["Tier 2"].push(emote);
+      } else if (emoteTier == 3000) {
+        emoteTable["Tier 3"].push(emote);
+      }
+    }
+
+    if (data.length != 0) {
+      const gifter = data[0].gifter_name;
+
+      let tier;
+
+      if (data[0].tier == 1000) {
+        tier = "Tier 1";
+      } else if (data[0].tier == 2000) {
+        tier = "Tier 2";
+      } else if (data[0].tier == 3000) {
+        tier = "Tier 3";
+      }
+
+      function findItem(arr, randomEmote) {
+        for (var i = 0; i < arr.length; ++i) {
+          var obj = arr[i];
+          if (obj.name == randomEmote) {
+            return i;
+          }
+        }
+        return -1;
+      }
+      var exemption1 = findItem(emoteData, "tibb12Howdy");
+      emoteData.splice(exemption1, 1);
+
+      const randomEmote1 =
+        emoteData[Math.floor(Math.random() * emoteData.length)].name;
+      var i = findItem(emoteData, randomEmote1);
+      emoteData.splice(i, 1);
+      const randomEmote2 =
+        emoteData[Math.floor(Math.random() * emoteData.length)].name;
+      var e = findItem(emoteData, randomEmote2);
+      emoteData.splice(i, 1);
+      const randomEmote3 =
+        emoteData[Math.floor(Math.random() * emoteData.length)].name;
+
+      return client.say(
+        CHANNEL_NAME,
+        `@${twitchUsername}, ${gifter} , gifted you a ${tier} sub. As a ${tier} sub you have access to ${emoteTable[tier].length} channel emotes and earn ${emoteTable[tier][0]}% more channel points. Here are three channel emotes you have with a ${tier} sub, ${randomEmote1} ${randomEmote2} ${randomEmote3}`
+      );
+    } else {
+      return client.say(
+        CHANNEL_NAME,
+        `@${twitchUsername}, you don't currently have a sub.`
+      );
+    }
+  }
+}
 
 client.on("message", async (
   channel,
@@ -509,6 +691,7 @@ client.on("message", async (
     }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);
+        customUserFunctions(client, message, twitchUsername, twitchUserId, userstate);
     }
     if (isBroadcaster || isMod || isAdmin) {
         ksHandler(client, lowerMessage, twitchUsername, userstate);

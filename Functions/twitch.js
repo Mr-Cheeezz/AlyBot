@@ -1,13 +1,18 @@
 import fs from "fs";
 import fetch from "node-fetch";
 
-const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions
 const COOKIE = process.env.COOKIE; // <--- change this to your cookie
 
 const BOT_NAME = process.env.BOT_NAME; // bot username
+const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions
+const BOT_ID = process.env.BOT_ID;
+
+const CLIENT_ID = process.env.CLIENT_ID;
+
+const ALY_TOKEN = process.env.ALY_TOKEN;
+
 const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
 const CHANNEL_ID = process.env.CHANNEL_ID; // id of channel for the bot to be in
-const BOT_ID = process.env.BOT_ID;
 
 
 
@@ -49,4 +54,20 @@ export const isLive = async () => {
       }
     })();
     return isLive;
-  };
+};
+
+export const getSubStatus = async (userId) => {
+  const r = await fetch(
+    `https://api.twitch.tv/helix/subscriptions?broadcaster_id=${CHANNEL_ID}&user_id=${userId}`,
+    {
+      headers: {
+        Authorization: "Bearer " + ALY_TOKEN,
+        "Client-Id": CLIENT_ID,
+      },
+    }
+  );
+
+  const json = await r.json();
+
+  return json;
+};

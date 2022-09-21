@@ -30,6 +30,8 @@ const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actio
 const BOT_NAME = process.env.BOT_NAME; // bot username
 const BOT_ID = process.env.BOT_ID; // bot uid
 
+const WAIT_REGISTER = 5 * 60 * 1000; // number of milliseconds, to wait before starting to get stream information
+
 const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
 const CHANNEL_ID = process.env.CHANNEL_ID;
 
@@ -572,7 +574,6 @@ client.on("message", async (
       })();
 
 
-
       const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
       const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId});
       const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
@@ -881,3 +882,680 @@ var messageArray = ([] = message.toLowerCase().split(" "));
     }
   }
 });
+
+async function liveUpHandler() {
+  // TO DO = first person to go to stream gets free channel points
+  client.say(
+    `${CHANNEL_NAME}`,
+    `${CHANNEL_NAME}, is now live. Logging will start ${
+      WAIT_REGISTER / (60 * 1000)
+    } minutes after this point to avoid false logging.`
+  );
+  await setTimeout(WAIT_REGISTER);
+  if (await TWITCH_FUNCTIONS.isLive()) {
+    client.say(
+      `${CHANNEL_NAME}`,
+      `Logging now starts. There has been ${streamNumber} number of streams since logging started and this stream will be ${
+        streamNumber + 1
+      }`
+    );
+    const time = new Date();
+    const startTime = time.getTime() - WAIT_REGISTER;
+    streamNumber++;
+    STREAMS[streamNumber] = STREAMS[1];
+    STREAMS[streamNumber]["date"] = time;
+    STREAMS[streamNumber]["day"] = time.getDay();
+    STREAMS[streamNumber]["ISODate"] = time.toISOString();
+    STREAMS[streamNumber]["streamStart"] = time.getTime();
+    fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
+  } else {
+    client.say(`${CHANNEL_NAME}`, "false log.");
+  }
+}
+
+async function liveDownHandler() {
+  if (await TWITCH_FUNCTIONS.isLive()) {
+    await setTimeout(WAIT_REGISTER / 100);
+    client.say(
+      `${CHANNEL_NAME}`,
+      `${CHANNEL_NAME}, is now offline. Logging has stopped.`
+    );    
+    const endTime = new Date().getTime();
+    STREAMS[streamNumber]["streamEnd"] = endTime;
+    fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
+  } else {
+    client.say("false log.");
+  }
+}
+
+
+var pubsub;
+const myname = CHANNEL_NAME;
+
+var ping = {};
+ping.pinger = false;
+ping.start = function () {
+  if (ping.pinger) {
+    clearInterval(ping.pinger);
+  }
+  ping.sendPing();
+
+  ping.pinger = setInterval(function () {
+    setTimeout(function () {
+      ping.sendPing();
+    }, Math.floor(Math.random() * 1000 + 1));
+  }, 4 * 60 * 1000);
+};
+ping.sendPing = function () {
+  try {
+    pubsub.send(
+      JSON.stringify({
+        type: "PING",
+      })
+    );
+    ping.awaitPong();
+  } catch (e) {
+    console.log(e);
+
+    pubsub.close();
+    StartListener();
+  }
+};
+ping.awaitPong = function () {
+  ping.pingtimeout = setTimeout(function () {
+    console.log("WS Pong Timeout");
+    pubsub.close();
+    StartListener();
+  }, 10000);
+};
+
+ping.gotPong = function () {
+  clearTimeout(ping.pingtimeout);
+};
+
+var requestListen = function (topics, token) {
+  let pck = {};
+  pck.type = "LISTEN";
+  pck.nonce = myname + "-" + new Date().getTime();
+
+  pck.data = {};
+  pck.data.topics = topics;
+  if (token) {
+    pck.data.auth_token = token;
+  }
+
+  pubsub.send(JSON.stringify(pck));
+};
+
+var StartListener = function () {
+  pubsub = new WebSocket("wss://pubsub-edge.twitch.tv");
+  pubsub
+    .on("close", function () {
+      console.log("Disconnected");
+      StartListener();
+    })
+    .on("open", function () {
+      ping.start();
+      runAuth();
+    });
+  pubsub.on("message", async function (raw_data, flags) {
+    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+    var PData = JSON.parse(raw_data);
+    if (PData.type == "RECONNECT") {
+      console.log("Reconnect");
+      pubsub.close();
+    } else if (PData.type == "PONG") {
+      ping.gotPong();
+    } else if (PData.type == "RESPONSE") {
+      console.log(PData);
+      console.log("RESPONSE: " + (PData.error ? PData.error : "OK"));
+    } else if (PData.type == "MESSAGE") {
+      PData = PData.data;
+      const pubTopic = PData.topic;
+      const pubMessage = PData.message;
+      const serverTime = pubMessage.server_time;
+      const type = JSON.parse(pubMessage).type;
+      if (type == "stream-up") {
+        // TO DO = first person to go to stream gets free channel points
+        client.say(CHANNEL_NAME, `/followersoff`);
+        liveUpHandler();
+      } else if (type == "stream-down") {
+        client.say(CHANNEL_NAME, `/followers`);
+        liveDownHandler();
+      } else if (type == "viewcount") {
+        STREAMS[streamNumber]["averageViewersPer30Seconds"] =
+          pubMessage.viewers;
+        const sum = 0;
+        for (const key in STREAMS[streamNumber]["averageViewersPer30Seconds"]) {
+          sum += STREAMS[key];
+        }
+        STREAMS[streamNumber]["averageviewers"] =
+          sum / Object.keys(STREAMS).length;
+        fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
+      } else if (pubTopic == `stream-chat-room-v1.${CHANNEL_ID}`) {
+        // // if(pubMessage.data.room.modes.followers_)
+        // var modeData = JSON.parse(pubMessage).data.room.modes
+        // if (modeData.emote_only_mode_enabled == true) {
+        //   console.log('emote only enabled')
+        // } else if (modeData.subscribers_only_mode_enabled == true) {
+        //   console.log('sub only mode enabled')
+        // }
+      } else if (pubTopic == `ads.${CHANNEL_ID}`) {
+        if (SETTINGS.ks == false) {
+          client.say(
+            CHANNEL_NAME,
+            `An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
+          );
+        }
+      } else if (pubTopic == `hype-train-events-v1.${CHANNEL_ID}`) {
+        if (SETTINGS.ks == false) {
+          client.say(
+            CHANNEL_NAME,
+            `HYPE TRAIN PagMan [test msg]`
+          )
+        }
+      } else if (pubTopic == `community-moments-channel-v1.${CHANNEL_ID}`) {
+        if (SETTINGS.ks == false) {
+          client.say(
+            CHANNEL_NAME,
+            `A new moment everyone claim it while you can.`
+          )
+        }
+      } else if (
+        type == "POLL_COMPLETE" ||
+        type == "POLL_TERMINATE" ||
+        type == "POLL_ARCHIVE"
+      ) {
+        // if (SETTINGS.ks == true) return
+        const r = await TWITCH_FUNCTIONS.getLatestPollData();
+
+        if (r == "error") return;
+
+        if (type == "POLL_ARCHIVE") {
+          const nodes = r.userNodes;
+
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const username = node.user.login;
+            const cp = node.tokens.communityPoints;
+
+            const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(
+              node.user.id
+            );
+
+            if (getSubStatus.data[0] == null) return;
+            const tier = getSubStatus.data[0].tier;
+
+            const standardRate = 5.33333333;
+
+            const t1Rate = 5.3333333 * 1.2;
+            const t2Rate = 5.3333333 * 1.4;
+            const t3Rate = 5.3333333 * 2;
+
+            let rate;
+            let sub;
+
+            if (tier == 1000) {
+              rate = t1Rate;
+              sub = "you're a tier 1 sub";
+            } else if (tier == 2000) {
+              rate = t2Rate;
+              sub = "you're a tier 2 sub";
+            } else if (tier == 3000) {
+              rate = t3Rate;
+              sub = "you're a tier 3 sub";
+            } else {
+              rate = standardRate;
+              sub = "you dont have a sub";
+            }
+
+            const test = cp / rate / (60 * 24 * 365);
+
+            const cpToHours = ROBLOX_FUNCTIONS.timeToAgo(test);
+
+            //             if (cp > 1000) {
+            //               client.say(
+            //                 CHANNEL_NAME,
+            //                 `@${username}, lost ${cp} channel points, since ${sub} thats ${cpToHours.timeString} of farming RIPBOZO`
+            //               );
+            //             }
+          }
+        } else if (type == "POLL_TERMINATE" || type == "POLL_COMPLETE") {
+          //           const nodes = r.userNodes;
+
+          //           for (let i = 0; i < nodes.length; i++) {
+          //             const node = nodes[i];
+          //             const username = node.user.login;
+          //             const cp = node.tokens.communityPoints;
+
+          //             console.log(JSON.stringify(r, null, 1));
+
+          //             let winning_choice_id;
+          //             let winning_choice_votes = 0;
+
+          //             r.choices.forEach(function (choice) {
+          //               if (choice.votes.total > winning_choice_votes) {
+          //                 winning_choice_votes = choice.votes.total;
+          //                 winning_choice_id = choice.id;
+          //               }
+          //             });
+
+          //             //
+
+          //             nodes.forEach(function (node) {
+          //               var packs = [];
+          //               node.choices.forEach(function (choice) {
+          //                 if (choice.id != winning_choice_id) {
+          //                   r.choices.forEach(function (mainChoice) {
+          //                     if (mainChoice.id == choice.id) {
+          //                       packs.push(mainChoice.title);
+          //                     }
+          //                   });
+          //                 }
+          //               });
+          //             });
+
+          //             nodes.forEach(function (node) {
+          //               var choiceArray = {};
+
+          //               const user = node.user.login;
+
+          //               node.choices.forEach(function (choice) {
+          //                 if (!choiceArray[choice.pollChoice.id]) {
+          //                   choiceArray[choice.pollChoice.id] =
+          //                     choice.tokens.communityPoints;
+          //                 } else {
+          //                   choiceArray[choice.pollChoice.id] =
+          //                     choiceArray[choice.pollChoice.id] +
+          //                     choice.tokens.communityPoints;
+          //                 }
+          //               });
+
+          //               let mostVotedFor;
+          //               let mostedVoted = 0;
+          //               let mostVotedForName;
+          //               let total = 0;
+
+          //               for (const key in choiceArray) {
+          //                 const amount = choiceArray[key];
+          //                 total += amount;
+          //                 if (amount > mostedVoted) {
+          //                   mostVotedFor = key;
+          //                 }
+          //               }
+
+          //               r.choices.forEach(function (mainChoice) {
+          //                 console.log(mostVotedFor);
+          //                 if (mainChoice.id == mostVotedFor) {
+          //                   mostVotedForName = mainChoice.title;
+          //                 }
+          //               });
+
+          //               console.log(
+          //                 `${user} spent in total ${total} channel points, spending the most on ${mostVotedForName} which they spent ${choiceArray[mostVotedFor]} channel points on.`
+          //               );
+          //             });
+          //           }
+
+          var polldata = r;
+          var choices = polldata.choices;
+          var userNodes = polldata.userNodes;
+
+          const determineWinner = async () => {
+            let winner_id = "";
+            let winner_title = "";
+            let winner_votes = 0;
+
+            choices.forEach(function (choice, index) {
+              const totalVotes = choice.votes.total;
+              if (totalVotes > winner_votes) {
+                winner_id = choice.id;
+                winner_title = choice.title;
+                winner_votes = totalVotes;
+              }
+            });
+
+            return {
+              winner_id: winner_id,
+              winner_title: winner_title,
+              winner_votes: winner_votes,
+            };
+          };
+
+          const collateUserData = async () => {
+            const userData = {};
+
+            userNodes.forEach(function (node) {
+              const userChoices = node.choices;
+
+              const userId = node.user.id;
+              const username = node.user.login;
+              const displayName = node.user.displayName;
+
+              userData[userId] = {
+                username: username,
+                displayName: displayName,
+              };
+
+              userChoices.forEach(function (userChoice) {
+                userData[userId][userChoice.pollChoice.id] =
+                  userChoice.tokens.communityPoints;
+              });
+            });
+
+            return userData;
+          };
+
+          const collateUserLosses = async () => {
+            const userData = await collateUserData();
+            const winnerData = await determineWinner();
+
+            const userLosses = {};
+
+            for (const userId in userData) {
+              userLosses[userId] = {
+                biggestLoss: 0,
+                biggestLossId: "",
+                allLosses: {},
+                votedForWinner: false,
+                winnerLoss: 0,
+                winnerId: winnerData.winner_id,
+                username: userData[userId].username,
+                displayName: userData[userId].displayName,
+              };
+
+              for (const choice in userData[userId]) {
+                // console.log(choice)
+                if (
+                  userData[userId][choice] != userData[userId].username &&
+                  userData[userId][choice] != userData[userId].displayName
+                ) {
+                  if (choice != winnerData.winner_id) {
+                    // console.log(userData[userId][choice])
+                    userLosses[userId]["allLosses"][choice] =
+                      userData[userId][choice];
+                  } else {
+                    userLosses[userId]["votedForWinner"] = true;
+                    userLosses[userId]["winnerLoss"] =
+                      userData[userId][winnerData.winner_id];
+                    // console.log(userData[userId][winnerData.winner_id])
+                  }
+                }
+              }
+
+              for (const user in userLosses) {
+                for (const loss in userLosses[user]["allLosses"]) {
+                  const biggestLoss = userLosses[user]["biggestLoss"];
+
+                  if (userLosses[user]["allLosses"][loss] > biggestLoss) {
+                    userLosses[user]["biggestLoss"] =
+                      userLosses[user]["allLosses"][loss];
+                    userLosses[user]["biggestLossId"] = loss;
+                  }
+                }
+              }
+            }
+            return userLosses;
+          };
+
+          const choiceIdAndTitle = async () => {
+            const choiceArray = {};
+            const winnerData = await determineWinner();
+
+            choices.forEach(function (choice) {
+              if (choice.id != winnerData.winner_id) {
+                choiceArray[choice.id] = choice.title;
+              }
+            });
+            return choiceArray;
+          };
+
+          const processUserLosses = async () => {
+            const userLosses = await collateUserLosses();
+            const choiceArray = await choiceIdAndTitle();
+            const userData2 = await collateUserData();
+
+            const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(
+              node.user.id
+            );
+
+            if (getSubStatus.data[0] == null) return;
+            const tier = getSubStatus.data[0].tier;
+
+            const standardRate = 5.33333333;
+
+            const t1Rate = 5.3333333 * 1.2;
+            const t2Rate = 5.3333333 * 1.4;
+            const t3Rate = 5.3333333 * 2;
+
+            let rate;
+            let sub;
+
+            if (tier == 1000) {
+              rate = t1Rate;
+              sub = "you're a tier 1 sub";
+            } else if (tier == 2000) {
+              rate = t2Rate;
+              sub = "you're a tier 2 sub";
+            } else if (tier == 3000) {
+              rate = t3Rate;
+              sub = "you're a tier 3 sub";
+            } else {
+              rate = standardRate;
+              sub = "you dont have a sub";
+            }
+
+            const packs = {};
+
+            const packLeaders = {};
+
+            const messages = {};
+
+            for (const choiceId in choiceArray) {
+              packs[choiceId] = {};
+              packLeaders[choiceId] = {};
+            }
+
+            for (const userId in userLosses) {
+              const user = userLosses[userId];
+
+              let overallLoss = 0;
+
+              for (const loss in user.allLosses) {
+                packs[loss][userId] = user.biggestLoss;
+              }
+            }
+
+            for (const pack in packs) {
+              let highestLoss = 0;
+              let packLeader;
+              let totalPackLoss = 0;
+
+              for (const packMember in packs[pack]) {
+                totalPackLoss += packs[pack][packMember];
+
+                if (packs[pack][packMember] > highestLoss) {
+                  highestLoss = packs[pack][packMember];
+                  packLeader = packMember;
+                }
+              }
+
+              packLeaders[pack] = {
+                packLeader: packLeader,
+                loss: highestLoss,
+                totalPackLoss: totalPackLoss,
+              };
+            }
+            // console.log(userLosses)
+            // console.log(packs)
+            // console.log(packLeaders)
+
+            for (const pack in packLeaders) {
+              if (packLeaders[pack].packLeader != undefined) {
+                const leader = packLeaders[pack].packLeader;
+                const loss = packLeaders[pack].loss;
+                const totalLoss = packLeaders[pack].totalPackLoss;
+
+                const username = userData2[leader].username;
+                let totalLoss2 = 0;
+                let tempLoss2 = 0;
+
+                for (const userLoss in userLosses) {
+                  for (const loss2 in userLosses[userLoss].allLosses) {
+                    if (loss2 == pack) {
+                      tempLoss2 += userLosses[userLoss].allLosses[loss2];
+                    }
+                  }
+                }
+
+                if (
+                  totalLoss > 1000 &&
+                  loss > 500 &&
+                  tempLoss2 > userLosses[leader]["winnerLoss"] * 2
+                ) {
+                  for (const userLoss in userLosses) {
+                    for (const loss2 in userLosses[userLoss].allLosses) {
+                      if (loss2 == pack) {
+                        totalLoss2 += userLosses[userLoss].allLosses[loss2];
+                      }
+                    }
+                  }
+
+                  messages[
+                    pack
+                  ] = `RIPBOZO ${choiceArray[pack]} pack -${totalLoss2} channel points, pack leader ${userLosses[leader].username} lost ${userLosses[leader]["allLosses"][pack]} channel points.`;
+                }
+              }
+            }
+
+            return messages;
+          };
+
+          const processedData = await processUserLosses();
+
+          for (const message in processedData) {
+            client.say(CHANNEL_NAME, `${processedData[message]}`);
+          }
+        }
+      } else if (pubTopic == `predictions-channel-v1.${CHANNEL_ID}`) {
+        if (type == "event-created") {
+        } else if (type == "event-updated") {
+          const event = JSON.parse(pubMessage).data.event;
+
+          const status = event.status;
+
+          if (status == "RESOLVED") {
+            const winning_outcome_id = event.winning_outcome_id;
+            const prediction_id = event.id;
+            const predictionData =
+              await TWITCH_FUNCTIONS.getLatestPredictionData();
+
+            console.log(predictionData);
+          }
+        }
+      } else if (pubTopic == `community-points-channel-v1.${CHANNEL_ID}`) {
+        if (type == "reward-redeemed") {
+          const wasteCp = "b1c89cd39772e305183d1c65b901a690";
+
+          const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
+
+          if (redemptionId == wasteCp) {
+            client.say(CHANNEL_NAME, `[🤖]: `)
+          }
+        }
+      }
+    }
+  });
+};
+
+var runAuth = function () {
+  requestListen(
+    [
+      // `activity-feed-alerts-v2.${CHANNEL_ID}`,
+      `ads.${CHANNEL_ID}`,
+      // `ads-manager.${CHANNEL_ID}`,
+      // `channel-ad-poll-update-events.${CHANNEL_ID}`,
+      // `ad-property-refresh.${CHANNEL_ID}`,
+      // `automod-levels-modification.${CHANNEL_ID}`,
+      // `automod-queue.${CHANNEL_ID}`,
+      `leaderboard-events-v1.${CHANNEL_ID}`,
+      // `bits-campaigns-v1.${CHANNEL_ID}`,
+      // `campaign-events.${CHANNEL_ID}`,
+      // `user-campaign-events.${CHANNEL_ID}`,
+      // `celebration-events-v1.${CHANNEL_ID}`,
+      `channel-bits-badge-unlocks.${CHANNEL_ID}`,
+      // `channel-bits-events-v1.${CHANNEL_ID}`,
+      // `channel-bit-events-public.${CHANNEL_ID}`,
+      // `channel-event-updates.${CHANNEL_ID}`,
+      // `channel-squad-invites.${CHANNEL_ID}`,
+      // `channel-squad-updates.${CHANNEL_ID}`,
+      // `channel-subscribe-events-v1.${CHANNEL_ID}`,
+      // `channel-cheer-events-public-v1.${CHANNEL_ID}`,
+      // `broadcast-settings-update.${CHANNEL_ID}`,
+      // `channel-drop-events.${CHANNEL_ID}`,
+      // `channel-bounty-board-events.cta.${CHANNEL_ID}`,
+      // `chatrooms-user-v1.505216805`,
+      // `community-boost-events-v1.${CHANNEL_ID}`,
+      `community-moments-channel-v1.${CHANNEL_ID}`,
+      // `community-moments-user-v1.${CHANNEL_ID}`,
+      // `community-points-broadcaster-v1.${CHANNEL_ID}`,
+      `community-points-channel-v1.${CHANNEL_ID}`,
+      // `community-points-user-v1.${CHANNEL_ID}`,
+      `predictions-channel-v1.${CHANNEL_ID}`,
+      // `predictions-user-v1.${CHANNEL_ID}`,
+      // `creator-goals-events-v1.${CHANNEL_ID}`,
+      // `dashboard-activity-feed.${CHANNEL_ID}`,
+      // `dashboard-alert-status.${CHANNEL_ID}`,
+      // `dashboard-multiplayer-ads-events.${CHANNEL_ID}`,
+      // `emote-uploads.${CHANNEL_ID}`,
+      // `emote-animations.${CHANNEL_ID}`,
+      // `extension-control.upload.${CHANNEL_ID}`,
+      // `follows.${CHANNEL_ID}`,
+      // `friendship.${CHANNEL_ID}`,
+      `hype-train-events-v1.${CHANNEL_ID}`,
+      // `user-image-update.${CHANNEL_ID}`,
+      // `low-trust-users.${CHANNEL_ID}`,
+      // `midnight-squid-recipient-v1.${CHANNEL_ID}`,
+      // //`chat_moderator_actions.${CHANNEL_ID}`
+      `chat_moderator_actions.${BOT_ID}.${CHANNEL_ID}`,
+      // `moderator-actions.${CHANNEL_ID}`,
+      // `multiview-chanlet-update.${CHANNEL_ID}`,
+      // `channel-sub-gifts-v1.${CHANNEL_ID}`,
+      // `onsite-notifications.${CHANNEL_ID}`,
+      // `payout-onboarding-events.${CHANNEL_ID}`,
+      `polls.${CHANNEL_ID}`,
+      // `presence.${CHANNEL_ID}`,
+      // `prime-gaming-offer.${CHANNEL_ID}`,
+      // `channel-prime-gifting-status.${CHANNEL_ID}`,
+      // `pv-watch-party-events.${CHANNEL_ID}`,
+      // `private-callout.${CHANNEL_ID}`,
+      // `purchase-fulfillment-events.${CHANNEL_ID}`,
+      // `raid.${CHANNEL_ID}`,
+      // `radio-events-v1.${CHANNEL_ID}`,
+      // `rocket-boost-channel-v1.${CHANNEL_ID}`,
+      // `squad-updates.${CHANNEL_ID}`,
+      // `stream-change-v1.${CHANNEL_ID}`,
+      // `stream-change-by-channel.${CHANNEL_ID}`,
+      `stream-chat-room-v1.${CHANNEL_ID}`,
+      // `subscribers-csv-v1.${CHANNEL_ID}`,
+      `channel-unban-requests.${BOT_ID}.${CHANNEL_ID}`,
+      // `user-unban-requests.${CHANNEL_ID}`,
+      `upload.${CHANNEL_ID}`,
+      // `user-bits-updates-v1.${CHANNEL_ID}`,
+      // `user-commerce-events.${CHANNEL_ID}`,
+      // `user-crate-events-v1.${CHANNEL_ID}`,
+      // `user-drop-events.${CHANNEL_ID}`,
+      // `user-moderation-notifications.${CHANNEL_ID}`,
+      // `user-preferences-update-v1.${CHANNEL_ID}`,
+      // `user-properties-update.${CHANNEL_ID}`,
+      // `user-subscribe-events-v1.${CHANNEL_ID}`,
+      `video-playback.${CHANNEL_ID}`,
+      `video-playback-by-id.${CHANNEL_ID}`,
+      // `video-thumbnail-processing.${CHANNEL_ID}`,
+      `whispers.${BOT_ID}`,
+    ],
+    BOT_OAUTH
+  );
+};
+//TIBB_TOKEN
+StartListener();

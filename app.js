@@ -200,10 +200,6 @@ async function newLinkHandler(client, message, twitchUsername, userstate) {
         } else {
           SETTINGS.currentMode = "!link.on";
         }
-
-        if (isValidLink) {
-          client.say(CHANNEL_NAME, `@${twitchUsername} Link Updated.`)
-        }
         fs.writeFileSync("./SETTINGS.json", JSON.stringify(SETTINGS));
         shouldChangeLink = false;
         await setTimeout(1 * 60 * 1000);

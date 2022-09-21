@@ -623,6 +623,7 @@ client.on("message", async (
               return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);
             }
             if (SETTINGS.keywords == true) {
+              const msg = message.toLowerCase();
               if (!isMod || !isBroadcaster) {
                 if (
                     message.toLowerCase().includes("what game is this") ||
@@ -700,6 +701,25 @@ client.on("message", async (
           ) {
               client.say(CHANNEL_NAME, `/me !song @${twitchUsername}`)
           }
+          if (
+            msg.includes("is this a public") || 
+            msg.includes("is this vip") || 
+            msg.includes("vip server?") || 
+            msg.includes("is this public") || 
+            msg.includes("public or private") || 
+            msg.includes("in private server") || 
+            msg.includes("vip server")
+          ) {
+            if (SETTINGS.currentMode == "!join.on") {
+              client.raw(
+                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in a public server.`
+              );
+            } else if (SETTINGS.currentMode == "!link.on") {
+              client.raw(
+                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in a private server.`
+              );
+            }
+          }
         }
       if (message.toLowerCase() == "!namecolor") {
         client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Your username hex code is ${hexNameColor}.`);
@@ -721,6 +741,9 @@ client.on("message", async (
               `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Click here for commands: rentry.co/mainsbot`
             );
         }
+      if (message.toLowerCase() == "!github") {
+        client.say(CHANNEL_NAME, `@${twitchUsername} The bots github -> github.com/mr-cheeezz/alybot`)
+      }
     }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);

@@ -739,7 +739,13 @@ client.on("message", async (
             );
         }
       if (message.toLowerCase() == "!github") {
-        client.say(CHANNEL_NAME, `@${twitchUsername} The bots github -> github.com/mr-cheeezz/alybot`)
+        client.say(CHANNEL_NAME, `@${twitchUsername} The bots github -> github.com/mr-cheeezz/alybot`);
+      }
+      if (message.toLowerCase() == "!tf") {
+        client.say(
+          CHANNEL_NAME,
+          `pajaLaugh tf.mrcheeezz.com :tf:`
+        );
       }
     }
     if (SETTINGS.ks == false) {

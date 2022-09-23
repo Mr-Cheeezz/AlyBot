@@ -816,9 +816,9 @@ client.on("subgift", (channel, username, viewers, method) => {
 });
 
 client.on("cheer", (channel, username, viewers, method, userstate) => {
-    var Bits = userstate.bits
+    // var Bits = userstate.bits
     if (SETTINGS.ks == false) {
-        client.say(CHANNEL_NAME, `/me [🤖]: Thank you @${username} xqcL for the ${Bits} bits. aly1263Sheesh`);
+        client.say(CHANNEL_NAME, `/me [🤖]: Thank you @${username} xqcL for the bits. aly1263Sheesh`);
     }
 });
 

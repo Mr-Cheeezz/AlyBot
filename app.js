@@ -11,6 +11,7 @@ import stringSimilarity from "string-similarity";
 
 import * as ROBLOX_FUNCTIONS from "./Functions/roblox.js";
 import * as TWITCH_FUNCTIONS from "./Functions/twitch.js";
+import * as RESPONSES from "./Functions/responses.js";
 
 const alyId = 72121088 // roblox id for getting game and playtime
 
@@ -24,7 +25,7 @@ import { time } from "console";
 import { channel } from "diagnostics_channel";
 import { resourceLimits } from "worker_threads";
 
-const COOKIE = process.env.COOKIE;
+const COOKIE = process.env.COOKIE; // roblo sec token
 
 const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions
 const BOT_NAME = process.env.BOT_NAME; // bot username
@@ -33,11 +34,15 @@ const BOT_ID = process.env.BOT_ID; // bot uid
 const WAIT_REGISTER = 5 * 60 * 1000; // number of milliseconds, to wait before starting to get stream information
 
 const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
-const CHANNEL_ID = process.env.CHANNEL_ID;
+const CHANNEL_ID = process.env.CHANNEL_ID; // uid of CHANNEL_NAME
 
 let SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 let STREAMS = JSON.parse(fs.readFileSync("./STREAMS.json"));
+let WORDS = JSON.parse(fs.readFileSync("./KEYWORDS.json"));
 
+const COOLDOWN = 90000 // keyword cooldown
+
+var commandsList = ["!roblox", "!link"];
 
 const client = new tmi.Client({
     options: { debug: true },
@@ -129,7 +134,7 @@ async function ksHandler(client, lowerMessage, twitchUsername, userstate) {
 }
 
 async function timerHandler(client, lowerMessage, twitchUsername, userstate) {
-    if (lowerMessage == "!timer.on") {
+    if (lowerMessage == "!timers.on") {
       if (SETTINGS.timers == true) {
         return client.raw(
           `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Timers are already on.`
@@ -141,7 +146,7 @@ async function timerHandler(client, lowerMessage, twitchUsername, userstate) {
           `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: @${CHANNEL_NAME}, Timers are now on.`
         );
       }
-    } else if (lowerMessage == "!timer.off") {
+    } else if (lowerMessage == "!timers.off") {
       if (SETTINGS.timers == false) {
         return client.raw(
           `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Timers are already off.`
@@ -259,6 +264,33 @@ async function customModFunctions(client, message, twitchUsername, userstate) {
         );
     }
 }
+async function joinHandler(
+  message,
+  twitchUsername,
+  isModOrBroadcaster,
+  twitchUserId
+) {
+  const currentMode = SETTINGS.currentMode;
+  let responseLimit = 1;
+  let responseCount = 0;
+
+  if (SETTINGS.ks == true) return;
+  if (SETTINGS.ks == false) {
+    for (const wordSet in WORDS) {
+      if (responseLimit == 0) {
+        break;
+      }
+      if (WORDS[wordSet].some((word) => message.toLowerCase().includes(word))) {
+        if (wordSet == "game") {
+          RESPONSES.responses[wordSet](client, twitchUsername)
+        } else {
+          RESPONSES.responses[wordSet](client, twitchUsername, message);
+        }
+        responseLimit -= 1;
+      }
+    }
+  }
+}
 async function updateMode(client, message, twitchUsername, userstate) {
     var messageArray = ([] = message.toLowerCase().split(" "));
   
@@ -334,7 +366,6 @@ async function newUserHandler(client, message, twitchUsername, isFirstMessage, u
         `tibb12Waving!!`,
         `tibb12Waving hi!!`,
         `Hey welcome tibb12Waving`,
-        `tibb12Wave`,
         `tibb12Waving hello`,
         `Welcome! tibb12Waving tibb12Waving`,
         `tibb12Waving tibb12Waving`,
@@ -544,8 +575,10 @@ client.on("message", async (
   userstate,
   message,
   self,
-  viewers
+  viewers,
+  target
   ) => {
+    if (self) return;
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
     const isFirstMessage = userstate["first-msg"];
     const twitchUserId = userstate["user-id"];
@@ -564,6 +597,7 @@ client.on("message", async (
     twitchUserId == BOT_ID;
     const isMod = userstate["mod"];
     const hexNameColor = userstate.color;
+    const ModOrBroadcaster = isMod || isBroadcaster;
     const lowerMessage = message.toLowerCase();
     const isVip = (() => {
         if (userstate["badges"] && userstate["badges"].vip == 1) {
@@ -577,6 +611,7 @@ client.on("message", async (
       const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
       const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId});
       const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
+      const playtime = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.timeString})
 
       if (SETTINGS.ks == false) {
         if (message.toLowerCase() == "!game" || message.toLowerCase() == "1game") {      
@@ -619,8 +654,22 @@ client.on("message", async (
               }
               return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);
             }
+            if (message.toLowerCase() == "!playtime" || message.toLowerCase() == "!gametime") {
+              if (onlineStatus > 30) {
+                return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is not playing anything right now.`);
+              }
+        
+              console.log(playtime)
+              if (robloxGame != 'Website') {
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly has been playing ${robloxGame} for ${playtime}.`);
+                return
+              }
+              
+              return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);
+            }
             if (SETTINGS.keywords == true) {
               const msg = message.toLowerCase();
+              const kwrd = message.toLowerCase().includes;
               if (!isMod || !isBroadcaster || !isAdmin) {
                 if (
                     message.toLowerCase().includes("what game is this") ||
@@ -645,76 +694,8 @@ client.on("message", async (
                       return client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently switching games.`);            
                 }
               }
-            if (!isMod || !isVip || !isBroadcaster) {
-              if (
-                message.toLowerCase().includes("can you add me") ||
-                message.toLowerCase().includes("can you friend me") ||
-                message.toLowerCase().includes("how to be friend") ||
-                message.toLowerCase().includes("pls add me") ||
-                message.toLowerCase().includes("ad me") ||
-                message.toLowerCase().includes("please friend me") ||
-                message.toLowerCase().includes("accept my friend request") ||
-                message.toLowerCase().includes("pls friend me") ||
-                message.toLowerCase().includes("send you a friend request")
-            ) {
-                client.say(CHANNEL_NAME, `/me !add @${twitchUsername}`);
-            }
             if (message.includes("***")) {
               client.say(CHANNEL_NAME, `/me [🤖]: @${twitchUsername}, Do NOT send links.`);
-            }
-          }
-    
-          if (!isMod) {
-            if (
-                message.toLowerCase().includes("what time is it")
-            ) {
-                client.say(CHANNEL_NAME, `/me !time @${twitchUsername}`);
-            }
-          }
-          if (!isMod || !isBroadcaster || !isVip) {
-            if (
-              message.toLowerCase().includes("can i join") ||
-              message.toLowerCase().includes("can i play") ||
-              message.toLowerCase().includes("how to play") ||
-              message.toLowerCase().includes("how to join") ||
-              message.toLowerCase().includes("giv link") ||
-              message.toLowerCase().includes("give link") ||
-              message.toLowerCase().includes("can we join") ||
-              message.toLowerCase().includes("how do i join") ||
-              message.toLowerCase().includes("can we plat tog")
-            ) {
-              if (SETTINGS.currentMode == "!join.on") {
-                client.say(CHANNEL_NAME, `!roblox @${twitchUsername}`)
-              } else if (SETTINGS.currentMode == "!link.on") {
-                client.say(CHANNEL_NAME, `@${twitchUsername}, Type !link to get the link to join`)
-              }
-            }
-          } 
-          if (
-              message.toLowerCase().includes("what song is this") ||
-              message.toLowerCase().includes("song name") ||
-              message.toLowerCase().includes("what is this song") ||
-              message.toLowerCase().includes("what is this music") 
-          ) {
-              client.say(CHANNEL_NAME, `/me !song @${twitchUsername}`)
-          }
-          if (
-            msg.includes("is this a public") || 
-            msg.includes("is this vip") || 
-            msg.includes("vip server?") || 
-            msg.includes("is this public") || 
-            msg.includes("public or private") || 
-            msg.includes("in private server") || 
-            msg.includes("vip server")
-          ) {
-            if (SETTINGS.currentMode == "!join.on") {
-              client.raw(
-                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in a public server.`
-              );
-            } else if (SETTINGS.currentMode == "!link.on") {
-              client.raw(
-                `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in a private server.`
-              );
             }
           }
         }
@@ -744,10 +725,13 @@ client.on("message", async (
       if (message.toLowerCase() == "!tf") {
         client.say(
           CHANNEL_NAME,
-          `pajaLaugh tf.mrcheeezz.com :tf:`
+          `/me Click here to get Jebaited -> tf.mrcheeezz.com`
         );
       }
-    }
+      var messageArray = ([] = message.toLowerCase().split(" "));
+       if (messageArray[0] == "!join") {
+        client.say(CHANNEL_NAME, `/me : ${twitchUsername} -> Click here to play : roblox.com/users/${alyId} (${CHANNEL_NAME})`)
+       }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);
         customUserFunctions(client, message, twitchUsername, twitchUserId, userstate);
@@ -798,6 +782,26 @@ client.on("message", async (
             }
         }
     }
+
+    var keywords;
+
+    var messageArray = ([] = message.split(" "));
+    var isCommand = commandsList.includes(messageArray[0]);
+  
+    for (const wordSet in WORDS) {
+      if (WORDS[wordSet].some((word) => message.toLowerCase().includes(word))) {
+        keywords = true;
+        continue;
+      }
+    }
+  
+    if (!ModOrBroadcaster && SETTINGS.keywords == true && SETTINGS.ks == false) {
+      joinHandler(message, twitchUsername, ModOrBroadcaster, twitchUserId);
+    }
+  
+    if (SETTINGS.ks && !ModOrBroadcaster) {
+      return;
+    }
 });
 
 client.on("raided", (channel, username, viewers, method) => { 
@@ -818,15 +822,22 @@ client.on("subgift", (channel, username, viewers, method) => {
 client.on("cheer", (channel, username, viewers, method, userstate) => {
     // var Bits = userstate.bits
     if (SETTINGS.ks == false) {
-        client.say(CHANNEL_NAME, `/me [🤖]: Thank you @${username} xqcL for the bits. aly1263Sheesh`);
+        client.say(CHANNEL_NAME, `/me [🤖]: Thank you @${method} xqcL for the bits. aly1263Sheesh`);
     }
 });
 
 client.on("resub", (channel, username, viewers, method, months, month) => {
-    if (SETTINGS.ks == false) {
-        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${month} @${username}. aly1263Vibe`);
-        client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${month} @${username}. aly1263Vibe`);
+  const subscriberMonths = (() => {
+    if (isSubscriber) {
+      return userstate["badge-info"].subscriber;
+    } else {
+      return null;
     }
+  })();
+  if (SETTINGS.ks == false) {
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${subscriberMonths} months @${username}. aly1263Vibe`);
+    client.say(CHANNEL_NAME, `/me [🤖]: Thanks for resubbing for ${subscriberMonths} months @${username}. aly1263Vibe`);
+  }
 });
 
 client.on("subscription", (channel, username, viewers, method) => {
@@ -874,10 +885,10 @@ var messageArray = ([] = message.toLowerCase().split(" "));
     if (isBroadcaster || isMod || isAdmin) {
       if (SETTINGS.currentMode == "!link.on") {
         if (SETTINGS.currentLink != null) {
-          if (messageArray[0] == "!l" && messageArray[1] != null) {
+          if (messageArray[0] == "!l" && messageArray[1] == null) {
             client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Current Link -> ${SETTINGS.currentLink}`);
           }
-          if (messageArray[0] == "!l") {
+          if (messageArray[0] == "!l" && messageArray[1] != null) {
             client.say(CHANNEL_NAME, `[🤖]: ${messageArray[1]} Current Link -> ${SETTINGS.currentLink}`);
           }
         }

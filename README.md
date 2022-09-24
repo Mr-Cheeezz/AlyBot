@@ -5,6 +5,13 @@
 
 ## **NPM**
 
+
+### Building Bot
+
+```bash
+git clone https://github.com/Mr-Cheeezz/AlyBot.git
+```
+
 ### Packages
 
 ```bash
@@ -22,6 +29,8 @@ sudo npm install -g pm2 && sudo apt npm install nodemon -g
 ```bash
 cd AlyBot && pm2 start app.js
 ```
+
+***
 
 ## **ENV**
 

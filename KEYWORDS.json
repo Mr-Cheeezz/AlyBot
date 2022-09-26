@@ -2112,7 +2112,9 @@
       "is that the private server?",
       "vip server??",
       "are you in pravate server",
-      "!private server"
+      "!private server",
+      "are you in a public server",
+      "priv server"
     ],
     "songrequest": [
       "you take song rqs?",

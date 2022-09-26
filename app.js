@@ -765,7 +765,9 @@ client.on("message", async (
         if (robloxGame != 'Website') {
           client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in game, she is playing ${robloxGame}.`);
         }
-
+      }
+      if (message.toLowerCase() == "!whispers") {
+        client.say(CHANNEL_NAME, `@${twitchUsername} click here to check your whispers -> twitch.tv/popout/moderator/${twitchUsername}/whispers`)
       }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);

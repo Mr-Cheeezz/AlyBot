@@ -785,18 +785,8 @@ client.on("message", async (
                 SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
                 var currentMode = SETTINGS.currentMode.replace(".on", "");
                 currentMode = currentMode.replace("!", "");
-
-                if (SETTINGS.currentMode == "!join.on") {
-                    return client.raw(
-                        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: The bot is currently in join mode.`
-                    );
-                }
-                if (SETTINGS.currentMode == "!link.on") {
-                    return client.raw(
-                        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: The bot is currently in link mode.`
-                    );
-                }
-                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: The bot is currently in ${SETTINGS.currentMode} mode.`);
+                
+                client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: The bot is currently in ${currentMode} mode.`);
                 return
             }
             if (message.toLowerCase() == "!validmodes") {

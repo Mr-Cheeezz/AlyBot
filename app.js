@@ -758,11 +758,9 @@ client.on("message", async (
        if (message.toLowerCase() == "!rstats" || message.toLowerCase() == "!robloxstatus") {
         if (onlineStatus > 30) {
           client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently offline, she has been offline for ${playtime}`);
-        }
-        if (robloxGame == 'Website') {
+        } else if (robloxGame == 'Website') {
           client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently on the website.`);
-        }
-        if (robloxGame != 'Website') {
+        } else if (robloxGame != 'Website') {
           client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :[🤖]: Aly is currently in game, she is playing ${robloxGame}.`);
         }
       }

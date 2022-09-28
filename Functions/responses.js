@@ -4,7 +4,7 @@ import fs, { link } from 'fs'
 
 const alyId = 72121088 // roblox id for getting game and playtime
 
-const COOKIE = process.env.COOKIE;
+const COOKIE = process.env.ROBLOSEC;
 
 const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions
 const BOT_NAME = process.env.BOT_NAME; // bot username

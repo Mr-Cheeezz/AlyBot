@@ -1,5 +1,5 @@
 const BOT_OAUTH = process.env.BOT_OAUTH // bot oauth token for performing actions
-const COOKIE = process.env.COOKIE // <--- change this to your cookie
+const COOKIE = process.env.ROBLOSEC // <--- change this to your cookie
 const MAINSMONITOR_COOKIE = process.env.MAINSMONITOR_COOKIE
 
 const BOT_NAME = process.env.BOT_NAME // bot username

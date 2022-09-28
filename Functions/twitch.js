@@ -1,7 +1,7 @@
 import fs from "fs";
 import fetch from "node-fetch";
 
-const COOKIE = process.env.COOKIE; // <--- change this to your cookie
+const COOKIE = process.env.ROBLOSEC; // <--- change this to your cookie
 
 const BOT_NAME = process.env.BOT_NAME; // bot username
 const BOT_OAUTH = process.env.BOT_OAUTH; // bot oauth token for performing actions

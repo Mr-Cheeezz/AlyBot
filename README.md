@@ -39,9 +39,9 @@ cd AlyBot && pm2 start app.js
 *(Put the following content in the `.env`)*
 
 ```javascript
-COOKIE = '[YOUR .ROBLOSECURITY COOKIE]' // <--- change this to your roblox cookie
+ROBLOSEC = '[YOUR .ROBLOSECURITY COOKIE]' // change this to your roblox cookie
 
-BOT_OAUTH = '[OAUTH OF ACCOUNT FOR BOT TO BE ON]' // <--- bot oauth token for performing actions
+BOT_OAUTH = '[OAUTH OF ACCOUNT FOR BOT TO BE ON]' // bot oauth token for performing actions
 BOT_NAME = '[LOGIN USERNAME OF BOT ACCOUNT]' // bot username
 BOT_ID = '[UID OF BOT ACCOUNT TO BE ON]' // bot id
 

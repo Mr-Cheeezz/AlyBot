@@ -24,6 +24,7 @@ import { platform } from "os";
 import { time } from "console";
 import { channel } from "diagnostics_channel";
 import { resourceLimits } from "worker_threads";
+import { trueDependencies } from "mathjs";
 
 const COOKIE = process.env.COOKIE; // roblo sec token
 
@@ -75,8 +76,10 @@ bot.connect();
 
 
 client.on("connected", (channel, username, viewers, method) => {
-    client.action(CHANNEL_NAME, `[🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
-    bot.action(CHANNEL_NAME, `Joined channel ${CHANNEL_NAME}. xqcCheer`)
+  client.action(CHANNEL_NAME, `[🤖]: Joined channel ${CHANNEL_NAME}. aly1263Minion`)
+});
+bot.on("connected", (channel, username, viewers, method) => {
+  bot.action(CHANNEL_NAME, `Joined channel ${CHANNEL_NAME}. xqcCheer`)
 });
 
 const Sec = 1000
@@ -90,7 +93,7 @@ setInterval(async () => {
 
     const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});    
 
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == false) {
+    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
         var currentMode = SETTINGS.currentMode.replace(".on", "");
         currentMode = currentMode.replace("!", "");
     

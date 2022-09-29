@@ -47,6 +47,7 @@ const CHANNEL_ID = process.env.CHANNEL_ID; // uid of CHANNEL_NAME
 let SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 let STREAMS = JSON.parse(fs.readFileSync("./STREAMS.json"));
 let WORDS = JSON.parse(fs.readFileSync("./KEYWORDS.json"));
+let ACCOUNT = JSON.parse(fs.readFileSync("./Settings/ACCOUNT.json"));
 
 const COOLDOWN = 90000 // keyword cooldown
 

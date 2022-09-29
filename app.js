@@ -2,7 +2,7 @@ let chatByUser = {};
 
 import "dotenv/config";
 
-import fs, { link, readSync } from "fs";
+import fs, { lchown, link, readSync } from "fs";
 import tmi from "tmi.js";
 import fetch from "node-fetch";
 import WebSocket from "ws";
@@ -1459,103 +1459,12 @@ var StartListener = function () {
         }
       } else if (pubTopic == `community-points-channel-v1.${CHANNEL_ID}`) {
         if (type == "reward-redeemed") {
-          const vipEntry = "42693bf2-9dea-40a5-8a7c-7d088d220d21";
-          const timeout = "efa070b5-6d12-4cc6-8ef8-160eded1fdec";
-          const subonly = "f799d602-205b-4865-94a3-18b939d4c8ae";
-          const emoteonly = "27e600a4-1b2e-4ce3-b969-55e7cf89421f";
-          const remotesuboremote = "d08999ad-8338-4270-b306-f28d893a3676";
-          const removeoraddhat = "77ac0ea867ac50fb6e65f3839af51a31";
-
+          const wasteCP = "008708c82c49c10ba4ab5cb7a76bde87";
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
-
-          if (redemptionId == vipEntry) {
-            SETTINGS = JSON.parse(fs.readFileSync('./SETTINGS.json'))
-            if (SETTINGS.currentMode == '!ticket.on') {
-                const userInput = JSON.parse(pubMessage).data.redemption.user_input
-                const twitchUsername = JSON.parse(pubMessage).data.redemption.user.login
-                const isValidUser = await ROBLOX_FUNCTIONS.isValidRobloxUser(userInput)
-
-
-                if (!isValidUser.isValidUser) return client.say(CHANNEL_NAME, `@${twitchUsername}, not a valid username.`)
-
-                const friend = await ROBLOX_FUNCTIONS.sendFriendRequest(isValidUser.userId)
-
-                if (friend == 'already') {
-                    const friends = await ROBLOX_FUNCTIONS.getCurrentUserFriends(ROBLOX_ID)
-                    let alreadyFriend = false
-
-                    friends.forEach(function (friend) {
-                        if (friend.id == isValidUser.userId) {
-                            alreadyFriend = true
-                        }
-                    })
-
-                    if (alreadyFriend) return client.say(CHANNEL_NAME, `@${twitchUsername}, ' ${userInput} ' is already added.`)
-
-                    return client.say(CHANNEL_NAME, `@${twitchUsername} already sent ' ${userInput} ' a friend request.`)
-                } else if (friend != 'success') {
-                    return client.say(CHANNEL_NAME, `@${twitchUsername} unknown error ocurred.`)
-                }
-
-                TOUNFRIEND = JSON.parse(fs.readFileSync('./TOUNFRIEND.json'))
-
-                TOUNFRIEND[isValidUser.userId] = userInput
-                fs.writeFileSync('./TOUNFRIEND.json', JSON.stringify(TOUNFRIEND, null, 1))
-                TOUNFRIEND = JSON.parse(fs.readFileSync('./TOUNFRIEND.json'))
-
-                client.say(CHANNEL_NAME, `@${twitchUsername}, sent a friend request to ${userInput}.`)
-              }
-            }
-          if (redemptionId == subonly) {
-            client.say(
-              CHANNEL_NAME,
-              `/subscribers`
-            );
-            client.say(CHANNEL_NAME, 'EZY Clap non-subs')
-            await setTimeout(5 * 60 * 1000)
-            client.say(
-              CHANNEL_NAME,
-              `/subscribersoff`
-            );
-            client.say(CHANNEL_NAME, `The chat is no logner in sub only. THE NON SUBS ARE FREE PagMan`);
-          }
-          if (redemptionId == emoteonly) {
-            client.say(
-              CHANNEL_NAME,
-              `/emoteonly`
-            );
-            await setTimeout(5 * 60 * 1000)
-            client.say(
-              CHANNEL_NAME,
-              `/emoteonlyoff`
-            );
-            client.say(CHANNEL_NAME, `The chat is no longer in emote only.`);
-          }
-          if (redemptionId == remotesuboremote) {
-            client.say(CHANNEL_NAME, `/emoteonlyoff`);
-            client.say(CHANNEL_NAME, `/subscribersoff`);
-          }
-          if (redemptionId == timeout) {
-            const userInput = JSON.parse(pubMessage).data.redemption.user_input;
-            const twitchUsername =
-              JSON.parse(pubMessage).data.redemption.user.login;
-
-            const userInputSplit = ([] = userInput.split(" "));
-
-            client.say(
-              CHANNEL_NAME,
-              `${userInputSplit[0]} was timed out for 60 seconds by ${twitchUsername} via timeout redemption.`
-            );
-            client.say(
-              CHANNEL_NAME,
-              `.timeout ${userInputSplit[0]} 60 [AUTOMATIC] ${twitchUsername} redeemed a timeout on you. You can redeem the timeout redemption and others by clicking the yellow ' T ' in the bottom left of the chat box.`
-            );
-          }
-          if (redemptionId == removeoraddhat) {
-            await setTimeout(30 * 60 * 100)
-            client.say(CHANNEL_NAME, `@${CHANNEL_NAME} 30 miniutes has passed since ${twitchUsername} redeemed the hat redemption.`);
+          if (redemptionId == wasteCP) {
+            client.say(CHANNEL_NAME, `test`)
           }
         }
       }

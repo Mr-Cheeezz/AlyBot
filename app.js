@@ -1459,7 +1459,7 @@ var StartListener = function () {
         }
       } else if (pubTopic == `community-points-channel-v1.${CHANNEL_ID}`) {
         if (type == "reward-redeemed") {
-          const wasteCP = "008708c82c49c10ba4ab5cb7a76bde87";
+          const wasteCP = "95f8445b-ba65-456c-a75c-78b1061367f6";
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 

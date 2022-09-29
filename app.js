@@ -24,7 +24,6 @@ import { platform } from "os";
 import { time } from "console";
 import { channel } from "diagnostics_channel";
 import { resourceLimits } from "worker_threads";
-import { trueDependencies } from "mathjs";
 
 const COOKIE = process.env.COOKIE; // roblo sec token
 

@@ -88,7 +88,7 @@ bot.on("connected", (channel, username, viewers, method) => {
 const Sec = 1000
 const Min = 60 * 1000
 
-const JOIN_TIMER = 1 * 30 * Sec
+const JOIN_TIMER = 3 * 30 * Sec
 const GAME_TIMER = 9 * Min
 const SOICALS_TIMER = 7 * Min
 setInterval(async () => {

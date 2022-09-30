@@ -1581,36 +1581,33 @@ StartListener();
 
 client.on("raided", (channel, username, viewers, method) => { 
   if (SETTINGS.ks == false) {
-      if (viewers >= 5) {
-          client.say(CHANNEL_NAME, `/me ${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
-      }
+    if (viewers >= 5) {
+      client.action(CHANNEL_NAME, `${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
+    }
   }
 });
 
 client.on("subgift", (channel, username, viewers, method) => {
   if (SETTINGS.ks == false) {
-      client.say(CHANNEL_NAME, `/me ${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
-      client.say(CHANNEL_NAME, `/me ${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
+    client.action(CHANNEL_NAME, `${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
   }
 });
 
 client.on("cheer", (channel, username, viewers, method, userstate) => {
   if (SETTINGS.ks == false) {
-      client.say(CHANNEL_NAME, `/me ${BOT} Thank you @${username} xqcL for the bits. aly1263Sheesh`);
+    client.action(CHANNEL_NAME, `${BOT} Thank you @${username} xqcL for the bits. aly1263Sheesh`);
   }
 });
 
 client.on("resub", (channel, username, viewers, method, months, month) => {
 if (SETTINGS.ks == false) {
-  client.say(CHANNEL_NAME, `/me ${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
-  client.say(CHANNEL_NAME, `/me ${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
+  client.action(CHANNEL_NAME, `${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
 }
 });
 
 client.on("subscription", (channel, username, viewers, method) => {
   if (SETTINGS.ks == false) {
-      client.say(CHANNEL_NAME, `/me ${BOT} Thanks for subbing @${username}. aly1263Vibe`);
-      client.say(CHANNEL_NAME, `/me ${BOT} Thanks for subbing @${username}. aly1263Vibe`);
+    client.action(CHANNEL_NAME, `${BOT} Thanks for subbing @${username}. aly1263Vibe`);
   }
 });
 

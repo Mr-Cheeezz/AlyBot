@@ -1465,6 +1465,8 @@ var StartListener = function () {
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
+          const twitchUsername = userstate["username"];
+
           if (redemptionId == wasteCP) {
             client.say(
               CHANNEL_NAME,

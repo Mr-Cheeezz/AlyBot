@@ -105,30 +105,33 @@ setInterval(async () => {
         for (const key in timerCommands) {
           if (key == currentMode) {
             if (robloxGame != 'Website') {
-              client.say(CHANNEL_NAME, `/me ${BOT} ${timerCommands[key]}`);
+              client.action(CHANNEL_NAME, `${BOT} ${timerCommands[key]}`);
             }
           }
         }
     }
 }, JOIN_TIMER);
 
-setInterval(async () => {
-    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+// setInterval(async () => {
+//     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+//     const GAME = '[🎮]:';
 
-    const game = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
-    const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
+//     const game = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
+//     const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
 
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
+//     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
 
-      if (onlineStatus > 30) {
-        client.action(CHANNEL_NAME, `[🎮]: Aly is currently offline.`);
-      }
-      console.log("game")
-      if (game != 'Website') {
-        client.action(CHANNEL_NAME, `[🎮]: Aly is currently playing ${game}.`);
-      } 
-    }
-}, GAME_TIMER);
+//       if (onlineStatus > 30) {
+//        return client.action(CHANNEL_NAME, `${GAME} Aly is currently offline.`);
+//       }
+//       console.log("game")
+//       if (game != 'Website') {
+//         client.action(CHANNEL_NAME, `${GAME} Aly is currently playing ${game}.`);
+//         return
+//       }
+//       return client.action(CHANNEL_NAME, `${GAME} Aly is currenyly switching games.`);
+//     }
+// }, GAME_TIMER);
 
 setInterval(async () => {
     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
@@ -141,7 +144,7 @@ setInterval(async () => {
   
       var soicalsTimer =
         promo[Math.floor(Math.random() * promo.length)];
-      client.say(CHANNEL_NAME, `/me ${soicalsTimer}`);
+      client.action(CHANNEL_NAME, `${soicalsTimer}`);
     }
 }, SOICALS_TIMER);
 

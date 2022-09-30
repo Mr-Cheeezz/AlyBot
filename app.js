@@ -1469,10 +1469,10 @@ var StartListener = function () {
           JSON.parse(pubMessage).data.redemption.user.login;
 
           if (redemptionId == wasteCP) {
-            client.say(
-              CHANNEL_NAME,
-              `${BOT} ${twitchUsername} just wasted 600 channel points OMEGALUL RIPBOZO`
-            );
+            // client.say(
+            //   CHANNEL_NAME,
+            //   `${BOT} ${twitchUsername} just wasted 600 channel points OMEGALUL RIPBOZO`
+            // );
           }
 
           if (redemptionId == hydrate) {

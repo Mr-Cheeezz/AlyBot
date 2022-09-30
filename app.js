@@ -1006,16 +1006,6 @@ var StartListener = function () {
       } else if (type == "stream-down") {
         client.say(CHANNEL_NAME, `/followers`);
         liveDownHandler();
-      } else if (type == "viewcount") {
-        STREAMS[streamNumber]["averageViewersPer30Seconds"] =
-          pubMessage.viewers;
-        const sum = 0;
-        for (const key in STREAMS[streamNumber]["averageViewersPer30Seconds"]) {
-          sum += STREAMS[key];
-        }
-        STREAMS[streamNumber]["averageviewers"] =
-          sum / Object.keys(STREAMS).length;
-        fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
       } else if (type == "AD_POLL_CREATE") {
         TWITCH_FUNCTIONS.onMultiplayerAdStart();
       } else if (type == "AD_POLL_COMPLETE") {
@@ -1462,6 +1452,8 @@ var StartListener = function () {
           const wasteCP = "95f8445b-ba65-456c-a75c-78b1061367f6";
           const hydrate = "2a8b4bcd-6593-4ae0-bb14-3e8d815806d6";
           const bigBop = "36ea71d1-996d-4fff-aaff-be3df69ef306";
+          // const emoteOnly = "";
+          
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
@@ -1471,19 +1463,21 @@ var StartListener = function () {
           if (redemptionId == wasteCP) {
             // client.say(
             //   CHANNEL_NAME,
-            //   `${BOT} ${twitchUsername} just wasted 600 channel points OMEGALUL RIPBOZO`
+            //   `${BOT} ${twitchUsername} just wasted 700 channel points OMEGALUL RIPBOZO`
             // );
           }
 
           if (redemptionId == hydrate) {
+            await setTimeout(1000 * 3)
             client.say(
               CHANNEL_NAME,
-              `${BOT} Hydrate xqcJuice`
+              `Hydrate xqcJuice`
             );
           }
 
           if (redemptionId == bigBop) {
-            client.say(
+            await setTimeout(1000 * 3)
+            client.action(
               CHANNEL_NAME,
               `${BOT} ${twitchUsername} just BOP bopped the chat aly1263Bopper !`
             );

@@ -1465,12 +1465,13 @@ var StartListener = function () {
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
-          const twitchUsername = userstate["username"];
+          const twitchUsername =
+          JSON.parse(pubMessage).data.redemption.user.login;
 
           if (redemptionId == wasteCP) {
             client.say(
               CHANNEL_NAME,
-              `${BOT} ${twitchUsername} just wasted 600 channel points, OMEGALUL RIPBOZO`
+              `${BOT} ${twitchUsername} just wasted 600 channel points OMEGALUL RIPBOZO`
             );
           }
 

@@ -67,28 +67,28 @@ client.connect();
 
 const BOT = '[🤖]:';
 
-const bot = new tmi.Client({
-  options: { debug: true },
-  identity: {
-    username: MAIN_NAME,
-    password: `OAuth:${MAIN_OAUTH}`,
-  },
-  channels: [CHANNEL_NAME]
-});
+// const bot = new tmi.Client({
+//   options: { debug: true },
+//   identity: {
+//     username: MAIN_NAME,
+//     password: `OAuth:${MAIN_OAUTH}`,
+//   },
+//   channels: [CHANNEL_NAME]
+// });
 
-bot.connect();
+// bot.connect();
 
-client.on("connected", (channel, username, viewers, method) => {
-  client.action(CHANNEL_NAME, `${BOT} Joined channel ${CHANNEL_NAME}. aly1263Minion`)
-});
-bot.on("connected", (channel, username, viewers, method) => {
-  bot.action(CHANNEL_NAME, `Joined channel ${CHANNEL_NAME}. xqcCheer`)
-});
+// client.on("connected", (channel, username, viewers, method) => {
+//   client.action(CHANNEL_NAME, `${BOT} Joined channel ${CHANNEL_NAME}. aly1263Minion`)
+// });
+// bot.on("connected", (channel, username, viewers, method) => {
+//   bot.action(CHANNEL_NAME, `Joined channel ${CHANNEL_NAME}. xqcCheer`)
+// });
 
 const Sec = 1000
-const Min = 60 * 1000
+const Min = 60 * Sec
 
-const JOIN_TIMER = 9 * 30 * Sec
+const JOIN_TIMER = 7 * Min
 const GAME_TIMER = 9 * Min
 const SOICALS_TIMER = 7 * Min
 setInterval(async () => {
@@ -133,20 +133,20 @@ setInterval(async () => {
 //     }
 // }, GAME_TIMER);
 
-setInterval(async () => {
-    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+// setInterval(async () => {
+//     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
    
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-      var promo = [
-        `!discord`,
-        `!youtube`
-      ];
+//     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
+//       var promo = [
+//         `!discord`,
+//         `!youtube`
+//       ];
   
-      var soicalsTimer =
-        promo[Math.floor(Math.random() * promo.length)];
-      client.action(CHANNEL_NAME, `${soicalsTimer}`);
-    }
-}, SOICALS_TIMER);
+//       var soicalsTimer =
+//         promo[Math.floor(Math.random() * promo.length)];
+//       client.action(CHANNEL_NAME, `${soicalsTimer}`);
+//     }
+// }, SOICALS_TIMER);
 
 async function ksHandler(client, lowerMessage, twitchUsername, userstate) {
     if (lowerMessage == "!ks.on") {
@@ -756,14 +756,14 @@ client.on("message", async (
     if (message.toLowerCase() == "!namecolor") {
       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Your username hex code is ${hexNameColor}.`);
     }
-    if (message.toLowerCase() == "!subage") {
-      if (!isSubscriber) {
-          client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are not currenty a sub.`);
-      }
-      if (isSubscriber) {
-          client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are currently subscribed to ${CHANNEL_NAME} for ${subscriberMonths} months.`);
-      }
-    }
+    // if (message.toLowerCase() == "!subage") {
+    //   if (!isSubscriber) {
+    //       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are not currenty a sub.`);
+    //   }
+    //   if (isSubscriber) {
+    //       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are currently subscribed to ${CHANNEL_NAME} for ${subscriberMonths} months.`);
+    //   }
+    // }
     if (
       message.toLowerCase() == "!commands" ||
       message.toLowerCase() == "!cmds" ||
@@ -1046,10 +1046,10 @@ var StartListener = function () {
         // }
       } else if (pubTopic == `ads.${CHANNEL_ID}`) {
         if (SETTINGS.ks == false) {
-          client.say(
-            CHANNEL_NAME,
-            `${BOT} An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
-          );
+          // client.say(
+          //   CHANNEL_NAME,
+          //   `${BOT} An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
+          // );
         }
       } else if (pubTopic == `community-moments-channel-v1.${CHANNEL_ID}`) {
         if (SETTINGS.ks == false) {
@@ -1057,382 +1057,6 @@ var StartListener = function () {
             CHANNEL_NAME,
             `${BOT} A new moment PagMan everyone claim it while you can PogU .`
           )
-        }
-      } else if (
-        type == "POLL_COMPLETE" ||
-        type == "POLL_TERMINATE" ||
-        type == "POLL_ARCHIVE"
-      ) {
-        // if (SETTINGS.ks == true) return
-        const r = await TWITCH_FUNCTIONS.getLatestPollData();
-
-        if (r == "error") return;
-
-        if (type == "POLL_ARCHIVE") {
-          const nodes = r.userNodes;
-
-          for (let i = 0; i < nodes.length; i++) {
-            const node = nodes[i];
-            const username = node.user.login;
-            const cp = node.tokens.communityPoints;
-
-            const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(
-              node.user.id
-            );
-
-            if (getSubStatus.data[0] == null) return;
-            const tier = getSubStatus.data[0].tier;
-
-            const standardRate = 5.33333333;
-
-            const t1Rate = 5.3333333 * 1.2;
-            const t2Rate = 5.3333333 * 1.4;
-            const t3Rate = 5.3333333 * 2;
-
-            let rate;
-            let sub;
-
-            if (tier == 1000) {
-              rate = t1Rate;
-              sub = "you're a tier 1 sub";
-            } else if (tier == 2000) {
-              rate = t2Rate;
-              sub = "you're a tier 2 sub";
-            } else if (tier == 3000) {
-              rate = t3Rate;
-              sub = "you're a tier 3 sub";
-            } else {
-              rate = standardRate;
-              sub = "you dont have a sub";
-            }
-
-            const test = cp / rate / (60 * 24 * 365);
-
-            const cpToHours = ROBLOX_FUNCTIONS.timeToAgo(test);
-
-                        if (cp > 1000) {
-                          client.say(
-                            CHANNEL_NAME,
-                            `@${username}, lost ${cp} channel points, since ${sub} thats ${cpToHours.timeString} of farming RIPBOZO`
-                          );
-                        }
-          }
-        } else if (type == "POLL_TERMINATE" || type == "POLL_COMPLETE") {
-                    const nodes = r.userNodes;
-
-                    for (let i = 0; i < nodes.length; i++) {
-                      const node = nodes[i];
-                      const username = node.user.login;
-                      const cp = node.tokens.communityPoints;
-
-                      console.log(JSON.stringify(r, null, 1));
-
-                      let winning_choice_id;
-                      let winning_choice_votes = 0;
-
-                      r.choices.forEach(function (choice) {
-                        if (choice.votes.total > winning_choice_votes) {
-                          winning_choice_votes = choice.votes.total;
-                          winning_choice_id = choice.id;
-                        }
-                      });
-
-                      //
-
-                      nodes.forEach(function (node) {
-                        var packs = [];
-                        node.choices.forEach(function (choice) {
-                          if (choice.id != winning_choice_id) {
-                            r.choices.forEach(function (mainChoice) {
-                              if (mainChoice.id == choice.id) {
-                                packs.push(mainChoice.title);
-                              }
-                            });
-                          }
-                        });
-                      });
-
-                      nodes.forEach(function (node) {
-                        var choiceArray = {};
-
-                        const user = node.user.login;
-
-                        node.choices.forEach(function (choice) {
-                          if (!choiceArray[choice.pollChoice.id]) {
-                            choiceArray[choice.pollChoice.id] =
-                              choice.tokens.communityPoints;
-                          } else {
-                            choiceArray[choice.pollChoice.id] =
-                              choiceArray[choice.pollChoice.id] +
-                              choice.tokens.communityPoints;
-                          }
-                        });
-
-                        let mostVotedFor;
-                        let mostedVoted = 0;
-                        let mostVotedForName;
-                        let total = 0;
-
-                        for (const key in choiceArray) {
-                          const amount = choiceArray[key];
-                          total += amount;
-                          if (amount > mostedVoted) {
-                            mostVotedFor = key;
-                          }
-                        }
-
-                        r.choices.forEach(function (mainChoice) {
-                          console.log(mostVotedFor);
-                          if (mainChoice.id == mostVotedFor) {
-                            mostVotedForName = mainChoice.title;
-                          }
-                        });
-
-                        console.log(
-                          `${user} spent in total ${total} channel points, spending the most on ${mostVotedForName} which they spent ${choiceArray[mostVotedFor]} channel points on.`
-                        );
-                      });
-                    }
-
-          var polldata = r;
-          var choices = polldata.choices;
-          var userNodes = polldata.userNodes;
-
-          const determineWinner = async () => {
-            let winner_id = "";
-            let winner_title = "";
-            let winner_votes = 0;
-
-            choices.forEach(function (choice, index) {
-              const totalVotes = choice.votes.total;
-              if (totalVotes > winner_votes) {
-                winner_id = choice.id;
-                winner_title = choice.title;
-                winner_votes = totalVotes;
-              }
-            });
-
-            return {
-              winner_id: winner_id,
-              winner_title: winner_title,
-              winner_votes: winner_votes,
-            };
-          };
-
-          const collateUserData = async () => {
-            const userData = {};
-
-            userNodes.forEach(function (node) {
-              const userChoices = node.choices;
-
-              const userId = node.user.id;
-              const username = node.user.login;
-              const displayName = node.user.displayName;
-
-              userData[userId] = {
-                username: username,
-                displayName: displayName,
-              };
-
-              userChoices.forEach(function (userChoice) {
-                userData[userId][userChoice.pollChoice.id] =
-                  userChoice.tokens.communityPoints;
-              });
-            });
-
-            return userData;
-          };
-
-          const collateUserLosses = async () => {
-            const userData = await collateUserData();
-            const winnerData = await determineWinner();
-
-            const userLosses = {};
-
-            for (const userId in userData) {
-              userLosses[userId] = {
-                biggestLoss: 0,
-                biggestLossId: "",
-                allLosses: {},
-                votedForWinner: false,
-                winnerLoss: 0,
-                winnerId: winnerData.winner_id,
-                username: userData[userId].username,
-                displayName: userData[userId].displayName,
-              };
-
-              for (const choice in userData[userId]) {
-                // console.log(choice)
-                if (
-                  userData[userId][choice] != userData[userId].username &&
-                  userData[userId][choice] != userData[userId].displayName
-                ) {
-                  if (choice != winnerData.winner_id) {
-                    // console.log(userData[userId][choice])
-                    userLosses[userId]["allLosses"][choice] =
-                      userData[userId][choice];
-                  } else {
-                    userLosses[userId]["votedForWinner"] = true;
-                    userLosses[userId]["winnerLoss"] =
-                      userData[userId][winnerData.winner_id];
-                    // console.log(userData[userId][winnerData.winner_id])
-                  }
-                }
-              }
-
-              for (const user in userLosses) {
-                for (const loss in userLosses[user]["allLosses"]) {
-                  const biggestLoss = userLosses[user]["biggestLoss"];
-
-                  if (userLosses[user]["allLosses"][loss] > biggestLoss) {
-                    userLosses[user]["biggestLoss"] =
-                      userLosses[user]["allLosses"][loss];
-                    userLosses[user]["biggestLossId"] = loss;
-                  }
-                }
-              }
-            }
-            return userLosses;
-          };
-
-          const choiceIdAndTitle = async () => {
-            const choiceArray = {};
-            const winnerData = await determineWinner();
-
-            choices.forEach(function (choice) {
-              if (choice.id != winnerData.winner_id) {
-                choiceArray[choice.id] = choice.title;
-              }
-            });
-            return choiceArray;
-          };
-
-          const processUserLosses = async () => {
-            const userLosses = await collateUserLosses();
-            const choiceArray = await choiceIdAndTitle();
-            const userData2 = await collateUserData();
-
-            const getSubStatus = await TWITCH_FUNCTIONS.getSubStatus(
-              node.user.id
-            );
-
-            if (getSubStatus.data[0] == null) return;
-            const tier = getSubStatus.data[0].tier;
-
-            const standardRate = 5.33333333;
-
-            const t1Rate = 5.3333333 * 1.2;
-            const t2Rate = 5.3333333 * 1.4;
-            const t3Rate = 5.3333333 * 2;
-
-            let rate;
-            let sub;
-
-            if (tier == 1000) {
-              rate = t1Rate;
-              sub = "you're a tier 1 sub";
-            } else if (tier == 2000) {
-              rate = t2Rate;
-              sub = "you're a tier 2 sub";
-            } else if (tier == 3000) {
-              rate = t3Rate;
-              sub = "you're a tier 3 sub";
-            } else {
-              rate = standardRate;
-              sub = "you dont have a sub";
-            }
-
-            const packs = {};
-
-            const packLeaders = {};
-
-            const messages = {};
-
-            for (const choiceId in choiceArray) {
-              packs[choiceId] = {};
-              packLeaders[choiceId] = {};
-            }
-
-            for (const userId in userLosses) {
-              const user = userLosses[userId];
-
-              let overallLoss = 0;
-
-              for (const loss in user.allLosses) {
-                packs[loss][userId] = user.biggestLoss;
-              }
-            }
-
-            for (const pack in packs) {
-              let highestLoss = 0;
-              let packLeader;
-              let totalPackLoss = 0;
-
-              for (const packMember in packs[pack]) {
-                totalPackLoss += packs[pack][packMember];
-
-                if (packs[pack][packMember] > highestLoss) {
-                  highestLoss = packs[pack][packMember];
-                  packLeader = packMember;
-                }
-              }
-
-              packLeaders[pack] = {
-                packLeader: packLeader,
-                loss: highestLoss,
-                totalPackLoss: totalPackLoss,
-              };
-            }
-            // console.log(userLosses)
-            // console.log(packs)
-            // console.log(packLeaders)
-
-            for (const pack in packLeaders) {
-              if (packLeaders[pack].packLeader != undefined) {
-                const leader = packLeaders[pack].packLeader;
-                const loss = packLeaders[pack].loss;
-                const totalLoss = packLeaders[pack].totalPackLoss;
-
-                const username = userData2[leader].username;
-                let totalLoss2 = 0;
-                let tempLoss2 = 0;
-
-                for (const userLoss in userLosses) {
-                  for (const loss2 in userLosses[userLoss].allLosses) {
-                    if (loss2 == pack) {
-                      tempLoss2 += userLosses[userLoss].allLosses[loss2];
-                    }
-                  }
-                }
-
-                if (
-                  totalLoss > 1000 &&
-                  loss > 500 &&
-                  tempLoss2 > userLosses[leader]["winnerLoss"] * 2
-                ) {
-                  for (const userLoss in userLosses) {
-                    for (const loss2 in userLosses[userLoss].allLosses) {
-                      if (loss2 == pack) {
-                        totalLoss2 += userLosses[userLoss].allLosses[loss2];
-                      }
-                    }
-                  }
-
-                  messages[
-                    pack
-                  ] = `RIPBOZO ${choiceArray[pack]} pack -${totalLoss2} channel points, pack leader ${userLosses[leader].username} lost ${userLosses[leader]["allLosses"][pack]} channel points.`;
-                }
-              }
-            }
-
-            return messages;
-          };
-
-          const processedData = await processUserLosses();
-
-          for (const message in processedData) {
-            client.say(CHANNEL_NAME, `${processedData[message]}`);
-          }
         }
       } else if (pubTopic == `predictions-channel-v1.${CHANNEL_ID}`) {
         if (type == "event-created") {
@@ -1471,19 +1095,19 @@ var StartListener = function () {
           }
 
           if (redemptionId == hydrate) {
-            await setTimeout(1000 * 3)
-            client.say(
-              CHANNEL_NAME,
-              `Hydrate xqcJuice`
-            );
+            // await setTimeout(1000 * 3)
+            // client.say(
+            //   CHANNEL_NAME,
+            //   `Hydrate xqcJuice`
+            // );
           }
 
           if (redemptionId == bigBop) {
-            await setTimeout(1000 * 3)
-            client.action(
-              CHANNEL_NAME,
-              `${BOT} ${twitchUsername} just BOP bopped the chat aly1263Bopper !`
-            );
+            // await setTimeout(1000 * 3)
+            // client.action(
+            //   CHANNEL_NAME,
+            //   `${BOT} ${twitchUsername} just BOP bopped the chat aly1263Bopper !`
+            // );
           }
         }
       }
@@ -1582,56 +1206,56 @@ var runAuth = function () {
 //TIBB_TOKEN
 StartListener();
 
-client.on("raided", (channel, username, viewers, method) => { 
-  if (SETTINGS.ks == false) {
-    if (viewers >= 5) {
-      client.action(CHANNEL_NAME, `${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
-    }
-  }
-});
+// client.on("raided", (channel, username, viewers, method) => { 
+//   if (SETTINGS.ks == false) {
+//     if (viewers >= 5) {
+//       client.action(CHANNEL_NAME, `${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
+//     }
+//   }
+// });
 
-client.on("subgift", (channel, username, viewers, method) => {
-  if (SETTINGS.ks == false) {
-    client.action(CHANNEL_NAME, `${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
-  }
-});
+// client.on("subgift", (channel, username, viewers, method) => {
+//   if (SETTINGS.ks == false) {
+//     client.action(CHANNEL_NAME, `${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
+//   }
+// });
 
-client.on("cheer", (channel,  method, userstate) => {
-  if (SETTINGS.ks == false) {
-    var Bits = userstate.bits;
-    if (Bits >= 25) {
-      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
-    }
-  }
-});
+// client.on("cheer", (channel,  method, userstate) => {
+//   if (SETTINGS.ks == false) {
+//     var Bits = userstate.bits;
+//     if (Bits >= 25) {
+//       client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+//     }
+//   }
+// });
 
-client.on("resub", (channel, username, viewers, method, months, month) => {
-if (SETTINGS.ks == false) {
-  client.action(CHANNEL_NAME, `${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
-}
-});
+// client.on("resub", (channel, username, viewers, method, months, month) => {
+// if (SETTINGS.ks == false) {
+//   client.action(CHANNEL_NAME, `${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
+// }
+// });
 
-client.on("subscription", (channel, username, viewers, method) => {
-  if (SETTINGS.ks == false) {
-    client.action(CHANNEL_NAME, `${BOT} Thanks for subbing @${username}. aly1263Vibe`);
-  }
-});
+// client.on("subscription", (channel, username, viewers, method) => {
+//   if (SETTINGS.ks == false) {
+//     client.action(CHANNEL_NAME, `${BOT} Thanks for subbing @${username}. aly1263Vibe`);
+//   }
+// });
 
-client.on("hosting", async (channel, username, viewers, method, userstate) => {
-  if (SETTINGS.ks == false) {
-      client.say(CHANNEL_NAME, `/me ${BOT} Aly is now hosting ${username}. xqcEZ`);
-      if ((await TWITCH_FUNCTIONS.isLive() == false)) {
-          client.say(username, `Aly just hosted ${username}.`);
-      }
-      client.say(username, `KAPOW ALY RAID KAPOW`);
-      await setTimeout(2 * 1000)
-      client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
-      await setTimeout(3 * 1000)
-      client.say(username, `KAPOW ALY RAID KAPOW`);
-      await setTimeout(3 * 1000)
-      client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
-  }
-});
+// client.on("hosting", async (channel, username, viewers, method, userstate) => {
+//   if (SETTINGS.ks == false) {
+//       client.say(CHANNEL_NAME, `/me ${BOT} Aly is now hosting ${username}. xqcEZ`);
+//       if ((await TWITCH_FUNCTIONS.isLive() == false)) {
+//           client.say(username, `Aly just hosted ${username}.`);
+//       }
+//       client.say(username, `KAPOW ALY RAID KAPOW`);
+//       await setTimeout(2 * 1000)
+//       client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
+//       await setTimeout(3 * 1000)
+//       client.say(username, `KAPOW ALY RAID KAPOW`);
+//       await setTimeout(3 * 1000)
+//       client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
+//   }
+// });
 
 client.on("message", async (channel, userstate, message, self, viewers) => {
 var messageArray = ([] = message.toLowerCase().split(" "));

@@ -1596,9 +1596,12 @@ client.on("subgift", (channel, username, viewers, method) => {
   }
 });
 
-client.on("cheer", (channel, username, viewers, method, userstate) => {
+client.on("cheer", (channel,  method, userstate) => {
   if (SETTINGS.ks == false) {
-    client.action(CHANNEL_NAME, `${BOT} Thank you @${username} xqcL for the bits. aly1263Sheesh`);
+    var Bits = userstate.bits;
+    if (Bits >= 25) {
+      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+    }
   }
 });
 

@@ -870,7 +870,7 @@ async function liveUpHandler() {
   // TO DO = first person to go to stream gets free channel points
   client.say(
     `${CHANNEL_NAME}`,
-    `${CHANNEL_NAME}, is now live. Logging will start ${
+    `${BOT} ${CHANNEL_NAME}, is now live. Logging will start ${
       WAIT_REGISTER / (60 * 1000)
     } minutes after this point to avoid false logging.`
   );
@@ -878,7 +878,7 @@ async function liveUpHandler() {
   if (await TWITCH_FUNCTIONS.isLive()) {
     client.say(
       `${CHANNEL_NAME}`,
-      `Logging now starts. There has been ${streamNumber} number of streams since logging started and this stream will be ${
+      `${BOT} Logging now starts. There has been ${streamNumber} number of streams since logging started and this stream will be ${
         streamNumber + 1
       }`
     );
@@ -901,7 +901,7 @@ async function liveDownHandler() {
     await setTimeout(WAIT_REGISTER / 100);
     client.say(
       `${CHANNEL_NAME}`,
-      `${CHANNEL_NAME}, is now offline. Logging has stopped.`
+      `${BOT} ${CHANNEL_NAME}, is now offline. Logging has stopped.`
     );    
     const endTime = new Date().getTime();
     STREAMS[streamNumber]["streamEnd"] = endTime;
@@ -1055,14 +1055,14 @@ var StartListener = function () {
         if (SETTINGS.ks == false) {
           client.say(
             CHANNEL_NAME,
-            `An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
+            `${BOT} An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
           );
         }
       } else if (pubTopic == `community-moments-channel-v1.${CHANNEL_ID}`) {
         if (SETTINGS.ks == false) {
           client.say(
             CHANNEL_NAME,
-            `.announce A new moment PagMan everyone claim it while you can PogU .`
+            `${BOT} A new moment PagMan everyone claim it while you can PogU .`
           )
         }
       } else if (
@@ -1460,11 +1460,30 @@ var StartListener = function () {
       } else if (pubTopic == `community-points-channel-v1.${CHANNEL_ID}`) {
         if (type == "reward-redeemed") {
           const wasteCP = "95f8445b-ba65-456c-a75c-78b1061367f6";
+          const hydrate = "2a8b4bcd-6593-4ae0-bb14-3e8d815806d6";
+          const bigBop = "36ea71d1-996d-4fff-aaff-be3df69ef306";
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
           if (redemptionId == wasteCP) {
-            client.say(CHANNEL_NAME, `test`)
+            client.say(
+              CHANNEL_NAME,
+              `${BOT} ${twitchUsername} just wasted 600 channel points, OMEGALUL RIPBOZO`
+            );
+          }
+
+          if (redemptionId == hydrate) {
+            client.say(
+              CHANNEL_NAME,
+              `${BOT} Hydrate xqcJuice`
+            );
+          }
+
+          if (redemptionId == bigBop) {
+            client.say(
+              CHANNEL_NAME,
+              `${BOT} ${twitchUsername} just BOP bopped the chat aly1263Bopper !`
+            );
           }
         }
       }

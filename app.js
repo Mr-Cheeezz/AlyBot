@@ -1095,11 +1095,11 @@ var StartListener = function () {
           }
 
           if (redemptionId == hydrate) {
-            // await setTimeout(1000 * 3)
-            // client.say(
-            //   CHANNEL_NAME,
-            //   `Hydrate xqcJuice`
-            // );
+            await setTimeout(1000 * 3)
+            client.say(
+              CHANNEL_NAME,
+              `Hydrate xqcJuice`
+            );
           }
 
           if (redemptionId == bigBop) {
@@ -1206,13 +1206,13 @@ var runAuth = function () {
 //TIBB_TOKEN
 StartListener();
 
-// client.on("raided", (channel, username, viewers, method) => { 
-//   if (SETTINGS.ks == false) {
-//     if (viewers >= 5) {
-//       client.action(CHANNEL_NAME, `${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
-//     }
-//   }
-// });
+client.on("raided", (channel, username, viewers, method) => { 
+  if (SETTINGS.ks == false) {
+    if (viewers >= 5) {
+      client.action(CHANNEL_NAME, `${BOT} Thank you so much @${username} for the raid of ${viewers}. aly1263Run`);
+    }
+  }
+});
 
 client.on("subgift", (channel, username, viewers, method) => {
   if (SETTINGS.ks == false) {
@@ -1250,7 +1250,7 @@ client.on("cheer", (channel,  method, userstate) => {
 
 client.on("hosting", async (channel, username, viewers, method, userstate) => {
   if (SETTINGS.ks == false) {
-      client.say(CHANNEL_NAME, `/me ${BOT} Aly is now hosting ${username}. xqcEZ`);
+      client.action(CHANNEL_NAME, `${BOT} Aly is now hosting ${username}. xqcEZ`);
       if ((await TWITCH_FUNCTIONS.isLive() == false)) {
           client.say(username, `Aly just hosted ${username}.`);
       }

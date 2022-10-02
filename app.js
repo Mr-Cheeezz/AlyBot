@@ -1214,48 +1214,55 @@ StartListener();
 //   }
 // });
 
-// client.on("subgift", (channel, username, viewers, method) => {
-//   if (SETTINGS.ks == false) {
-//     client.action(CHANNEL_NAME, `${BOT} @${username} thanks so much for gifting a sub to @${method}. aly1263Blink`);
-//   }
-// });
+client.on("subgift", (channel, username, viewers, method) => {
+  if (SETTINGS.ks == false) {
+    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  }
+});
 
-// client.on("cheer", (channel,  method, userstate) => {
-//   if (SETTINGS.ks == false) {
-//     var Bits = userstate.bits;
-//     if (Bits >= 25) {
-//       client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
-//     }
-//   }
-// });
+client.on("resub", (channel, username, viewers, method, months, month) => {
+if (SETTINGS.ks == false) {
+  client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+}
+});
 
-// client.on("resub", (channel, username, viewers, method, months, month) => {
-// if (SETTINGS.ks == false) {
-//   client.action(CHANNEL_NAME, `${BOT} Thanks for resubbing @${username}. aly1263Vibe`);
-// }
-// });
+client.on("subscription", (channel, username, viewers, method) => {
+  if (SETTINGS.ks == false) {
+    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  }
+});
 
-// client.on("subscription", (channel, username, viewers, method) => {
-//   if (SETTINGS.ks == false) {
-//     client.action(CHANNEL_NAME, `${BOT} Thanks for subbing @${username}. aly1263Vibe`);
-//   }
-// });
+client.on("cheer", (channel,  method, userstate) => {
+  if (SETTINGS.ks == false) {
+    var Bits = userstate.bits;
+    if (Bits >= 25) {
+      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+    }
+  }
+});
 
-// client.on("hosting", async (channel, username, viewers, method, userstate) => {
-//   if (SETTINGS.ks == false) {
-//       client.say(CHANNEL_NAME, `/me ${BOT} Aly is now hosting ${username}. xqcEZ`);
-//       if ((await TWITCH_FUNCTIONS.isLive() == false)) {
-//           client.say(username, `Aly just hosted ${username}.`);
-//       }
-//       client.say(username, `KAPOW ALY RAID KAPOW`);
-//       await setTimeout(2 * 1000)
-//       client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
-//       await setTimeout(3 * 1000)
-//       client.say(username, `KAPOW ALY RAID KAPOW`);
-//       await setTimeout(3 * 1000)
-//       client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
-//   }
-// });
+
+client.on("hosting", async (channel, username, viewers, method, userstate) => {
+  if (SETTINGS.ks == false) {
+      client.say(CHANNEL_NAME, `/me ${BOT} Aly is now hosting ${username}. xqcEZ`);
+      if ((await TWITCH_FUNCTIONS.isLive() == false)) {
+          client.say(username, `Aly just hosted ${username}.`);
+      }
+      client.say(username, `KAPOW ALY RAID KAPOW`);
+      await setTimeout(2 * 1000)
+      client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
+      await setTimeout(3 * 1000)
+      client.say(username, `KAPOW ALY RAID KAPOW`);
+      await setTimeout(3 * 1000)
+      client.say(username, `aly1263Raid ALY RAID aly1263Raid`);
+  }
+});
 
 client.on("message", async (channel, userstate, message, self, viewers) => {
 var messageArray = ([] = message.toLowerCase().split(" "));

@@ -13,7 +13,7 @@ const BOT_ID = process.env.BOT_ID; // bot uid
 const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
 const CHANNEL_ID = process.env.CHANNEL_ID; // channel uid
 
-const BOT = "[🤖]:"
+const BOT = '[🤖]:'
 
 export const responses = {
     join (client, target, message = null) {

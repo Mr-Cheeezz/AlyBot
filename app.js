@@ -754,16 +754,20 @@ client.on("message", async (
           }
       }
     if (message.toLowerCase() == "!namecolor") {
-      client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Your username hex code is ${hexNameColor}.`);
+      client.raw(
+        `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Your username hex code is ${hexNameColor}.`);
     }
-    // if (message.toLowerCase() == "!subage") {
-    //   if (!isSubscriber) {
-    //       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are not currenty a sub.`);
-    //   }
-    //   if (isSubscriber) {
-    //       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are currently subscribed to ${CHANNEL_NAME} for ${subscriberMonths} months.`);
-    //   }
-    // }
+    if (message.toLowerCase() == "!subage") {
+      if (!isSubscriber) {
+          client.raw(
+            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :
+            ${BOT} You are not currenty a sub.`);
+      }
+      if (isSubscriber) {
+          client.raw(
+            `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} You are currently subscribed to ${CHANNEL_NAME} for ${subscriberMonths} months.`);
+      }
+    }
     if (
       message.toLowerCase() == "!commands" ||
       message.toLowerCase() == "!cmds" ||
@@ -774,11 +778,13 @@ client.on("message", async (
           );
       }
     if (message.toLowerCase() == "!github") {
-      client.say(CHANNEL_NAME, `${BOT} @${twitchUsername} Check out the latest commit on the bot here -> github.com/mr-cheeezz/alybot`);
+      client.say(
+        `${CHANNEL_NAME}`,
+        `${BOT} @${twitchUsername} Check out the latest commit on the bot here -> github.com/mr-cheeezz/alybot`);
     }
     if (message.toLowerCase() == "!tf") {
       client.action(
-        CHANNEL_NAME,
+        `${CHANNEL_NAME}`,
         `${BOT} Click here to get Jebaited -> tf.mrcheeezz.com`
       );
     }

@@ -1037,19 +1037,20 @@ var StartListener = function () {
           FILTER_FUNCTIONS.onUntimedOut(untimedoutUser);
         }
       } else if (pubTopic == `stream-chat-room-v1.${CHANNEL_ID}`) {
-        // // if(pubMessage.data.room.modes.followers_)
-        // var modeData = JSON.parse(pubMessage).data.room.modes
-        // if (modeData.emote_only_mode_enabled == true) {
-        //   console.log('emote only enabled')
-        // } else if (modeData.subscribers_only_mode_enabled == true) {
-        //   console.log('sub only mode enabled')
-        // }
+        // if(pubMessage.data.room.modes.followers_)
+        var modeData = JSON.parse(pubMessage).data.room.modes
+        if (modeData.emote_only_mode_enabled == true) {
+          console.log('emote only enabled')
+          client.say(CHANNEL_NAME, `${BOT} SHOW ALY YOUR BEST EMOTES!`);
+        } else if (modeData.subscribers_only_mode_enabled == true) {
+          console.log('sub only mode enabled')
+        }
       } else if (pubTopic == `ads.${CHANNEL_ID}`) {
         if (SETTINGS.ks == false) {
-          // client.say(
-          //   CHANNEL_NAME,
-          //   `${BOT} An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
-          // );
+          client.say(
+            CHANNEL_NAME,
+            `${BOT} An ad has been ran, subscribe with prime for free and enjoy watching with 0 ads all month for free, !prime for more info EZY PogU .`
+          );
         }
       } else if (pubTopic == `community-moments-channel-v1.${CHANNEL_ID}`) {
         if (SETTINGS.ks == false) {
@@ -1080,7 +1081,9 @@ var StartListener = function () {
           const hydrate = "2a8b4bcd-6593-4ae0-bb14-3e8d815806d6";
           const bigBop = "36ea71d1-996d-4fff-aaff-be3df69ef306";
           // const emoteOnly = "";
-          
+          // const timeoutUser = "";
+          // const subOnly = "";
+          // const allMyRobux = "";
 
           const redemptionId = JSON.parse(pubMessage).data.redemption.reward.id;
 
@@ -1109,6 +1112,16 @@ var StartListener = function () {
             //   `${BOT} ${twitchUsername} just BOP bopped the chat aly1263Bopper !`
             // );
           }
+          
+          // if (redemptionId == emoteOnly) {
+          //   client.action
+          //   client.on('emoteonly', async (channel, message) => {
+          //     client.action(
+          //       CHANNEL_NAME,
+          //       `${BOT} SHOW ALY YOUR BEST EMOTES`
+          //     );
+          //   });
+          // }
         }
       }
     }

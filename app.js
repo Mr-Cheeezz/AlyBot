@@ -870,17 +870,6 @@ async function liveUpHandler() {
         streamNumber + 1
       }`
     );
-    const time = new Date();
-    const startTime = time.getTime() - WAIT_REGISTER;
-    streamNumber++;
-    STREAMS[streamNumber] = STREAMS[1];
-    STREAMS[streamNumber]["date"] = time;
-    STREAMS[streamNumber]["day"] = time.getDay();
-    STREAMS[streamNumber]["ISODate"] = time.toISOString();
-    STREAMS[streamNumber]["streamStart"] = time.getTime();
-    fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
-  } else {
-    client.say(`${CHANNEL_NAME}`, "false log.");
   }
 }
 
@@ -890,14 +879,7 @@ async function liveDownHandler() {
     client.say(
       `${CHANNEL_NAME}`,
       `${BOT} ${CHANNEL_NAME}, is now offline. Logging has stopped.`
-    );    
-    const endTime = new Date().getTime();
-    STREAMS[streamNumber]["streamEnd"] = endTime;
-    STREAMS[streamNumber]["repeatLengthOffenders"] = {};
-    STREAMS[streamNumber]["repeatSpamOffenders"] = {};
-    fs.writeFileSync("./STREAMS.json", JSON.stringify(STREAMS));
-  } else {
-    client.say("false log.");
+    );
   }
 }
 

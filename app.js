@@ -755,7 +755,7 @@ client.on("message", async (
       if (message.toLowerCase() == "!whispers") {
         client.say(CHANNEL_NAME, `@${twitchUsername} click here to check your whispers -> twitch.tv/popout/moderator/${twitchUsername}}/whispers`)
       }
-      if (message.toLoweraCase() == "schedule") {
+      if (message.toLowerCase() == "schedule") {
         client.raw(
           `@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Join the discord to see alys schedue -> https://discord.gg/QgWPcxRVEt`
         );

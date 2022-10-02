@@ -774,7 +774,7 @@ client.on("message", async (
           );
       }
     if (message.toLowerCase() == "!github") {
-      client.say(CHANNEL_NAME, `${BOT} @${twitchUsername} The bots github -> github.com/mr-cheeezz/alybot`);
+      client.say(CHANNEL_NAME, `${BOT} @${twitchUsername} Check out the latest commit on the bot here -> github.com/mr-cheeezz/alybot`);
     }
     if (message.toLowerCase() == "!tf") {
       client.action(

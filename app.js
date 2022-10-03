@@ -65,7 +65,7 @@ const BOT = '[🤖]:'
 const Sec = 1000
 const Min = 60 * 1000
 
-const JOIN_TIMER = 1 * 30 * Sec
+const JOIN_TIMER = 9 * 30 * Sec
 const GAME_TIMER = 9 * Min
 const SOICALS_TIMER = 7 * Min
 setInterval(async () => {
@@ -73,7 +73,7 @@ setInterval(async () => {
 
     const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});    
 
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == false) {
+    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
         var currentMode = SETTINGS.currentMode.replace(".on", "");
         currentMode = currentMode.replace("!", "");
     
@@ -82,43 +82,43 @@ setInterval(async () => {
         for (const key in timerCommands) {
           if (key == currentMode) {
             if (robloxGame != 'Website') {
-              client.say(CHANNEL_NAME, `/me [🤖]: ${timerCommands[key]}`);
+              client.action(CHANNEL_NAME, `[🤖]: ${timerCommands[key]}`);
             }
           }
         }
     }
 }, JOIN_TIMER);
 
-setInterval(async () => {
-    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+// setInterval(async () => {
+//     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 
-    const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
-    const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
+//     const robloxGame = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
+//     const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes});
 
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
+//     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
 
-      if (onlineStatus > 30) {
-        client.say(CHANNEL_NAME, `/me [🎮]: Aly is currently offline.`);
-      }
-      console.log("game")
+//       if (onlineStatus > 30) {
+//         client.say(CHANNEL_NAME, `/me [🎮]: Aly is currently offline.`);
+//       }
+//       console.log("game")
 
-    }
-}, GAME_TIMER);
+//     }
+// }, GAME_TIMER);
 
-setInterval(async () => {
-    SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
+// setInterval(async () => {
+//     SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
    
-    if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
-      var promo = [
-        `!discord`,
-        `!youtube`
-      ];
+//     if (SETTINGS.timers == true && SETTINGS.ks == false && (await TWITCH_FUNCTIONS.isLive()) == true) {
+//       var promo = [
+//         `!discord`,
+//         `!youtube`
+//       ];
   
-      var soicalsTimer =
-        promo[Math.floor(Math.random() * promo.length)];
-      client.say(CHANNEL_NAME, `/me ${soicalsTimer}`);
-    }
-}, SOICALS_TIMER);
+//       var soicalsTimer =
+//         promo[Math.floor(Math.random() * promo.length)];
+//       client.say(CHANNEL_NAME, `/me ${soicalsTimer}`);
+//     }
+// }, SOICALS_TIMER);
 
 async function ksHandler(client, lowerMessage, twitchUsername, userstate) {
     if (lowerMessage == "!ks.on") {

@@ -1203,16 +1203,16 @@ client.on("subgift", (channel, username, viewers, method) => {
 client.on("resub", (channel, username, viewers, method, months, month) => {
 if (SETTINGS.ks == false) {
   client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
-  client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
-  client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  // client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+  // client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
 }
 });
 
 client.on("subscription", (channel, username, viewers, method) => {
   if (SETTINGS.ks == false) {
     client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
-    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
-    client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+    // client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
+    // client.say(CHANNEL_NAME, `mrchee17SubHype mrchee17SubHype mrchee17SubHype`);
   }
 });
 
@@ -1221,8 +1221,8 @@ client.on("cheer", (channel,  method, userstate) => {
     var Bits = userstate.bits;
     if (Bits >= 25) {
       client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
-      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
-      client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+      // client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
+      // client.say(CHANNEL_NAME, `mrchee17Bits mrchee17Bits mrchee17Bits`);
     }
   }
 });

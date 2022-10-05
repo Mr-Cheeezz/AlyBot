@@ -19,11 +19,12 @@ export const responses = {
     join (client, target, message = null) {
         const SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"))
         var currentMode = SETTINGS.currentMode
+        var link = SETTINGS.currentLink
 
         if (currentMode == "!join.on") {
             client.say(CHANNEL_NAME, `!roblox @${target}`);
         } else if (currentMode == "!link.on") {
-            client.say(CHANNEL_NAME, `${BOT} @${target} type !link to get the link to join`);
+            client.say(CHANNEL_NAME, `${BOT} @${target} Click this linkm to join ${link}`);
         }
     },
     game: async (client, target, message = null) => {
@@ -34,11 +35,13 @@ export const responses = {
 
     if (onlineStatus > 30) {
         return client.say(
-            CHANNEL_NAME, `@${target}, Aly is not playing anything right now.`);
+            CHANNEL_NAME, `@${target}, Aly is not playing anything right now.`
+        );
     }
     if (game != 'Website') {
         return client.say(
-            CHANNEL_NAME, `@${target}, Aly is currenyly playing ${game}`);
+            CHANNEL_NAME, `@${target}, Aly is currenyly playing ${game}`
+        );
     }
     return client.say(
         CHANNEL_NAME, `@${target}, Aly is currently switching games.`);

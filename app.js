@@ -781,6 +781,21 @@ client.on("message", async (
       if (message.toLowerCase() == "!whispers") {
         client.say(CHANNEL_NAME, `@${twitchUsername} click here to check your whispers -> twitch.tv/popout/moderator/${twitchUsername}/whispers`)
       }
+      const isValidLink =
+      message.toLowerCase().includes("privateServerLinkCode") &&
+      message.toLowerCase().includes("roblox.com/games");
+      const Sender = userstate["username"];
+      var currentVipLink = SETTINGS.currentLink
+      if (isValidLink) {
+        if (isBroadcaster) {
+          if (currentVipLink != null) {
+            client.say(
+              CHANNEL_NAME,
+              `@${Sender} The link has been updated.`
+            );
+          }  
+        }
+      }
     if (SETTINGS.ks == false) {
         newUserHandler(client, message, twitchUsername, isFirstMessage, userstate);
         customUserFunctions(client, message, twitchUsername, twitchUserId, userstate);

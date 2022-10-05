@@ -26,6 +26,12 @@ export const responses = {
         } else if (currentMode == "!link.on") {
             client.say(CHANNEL_NAME, `${BOT} @${target} Click this linkm to join ${link}`);
         }
+      // if replys worked
+        // if (currentMode == "join.on") {
+        //     client.say(CHANNEL_NAME, `!roblox @${target}`);
+        // } else if (currentMode == "!link.on") {
+        //     client.reply(CHANNEL_NAME, `${BOT} @${target} Click this linkm to join ${link}`, target);
+        // }
     },
     game: async (client, target, message = null) => {
     const game = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
@@ -44,13 +50,16 @@ export const responses = {
         );
     }
     return client.say(
-        CHANNEL_NAME, `@${target}, Aly is currently switching games.`);
+        CHANNEL_NAME, `@${target}, Aly is currently switching games.`
+        );
     },
     servertype (client, target, message = null) {
         const SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"))
         var currentMode = SETTINGS.currentMode
         if (currentMode == "!link.on") {
-          client.say(CHANNEL_NAME, `${BOT} This is a private server type !link to get the link to join @${target}`);
+          client.say(
+            CHANNEL_NAME, `${BOT} This is a private server type !link to get the link to join @${target}`
+            );
         } else if (currentMode == "!1v1.on") {
           client.say(CHANNEL_NAME, `${BOT} Aly is currently 1v1ing viewers in his private server, type 1v1 in the chat to have a chance of being picked @${target}`);
         } else if (currentMode == "!join.on") {

@@ -46,13 +46,13 @@ const COOLDOWN = 90000 // keyword cooldown
 var commandsList = ["!roblox", "!link"];
 
 const client = new tmi.Client({
-    options: { debug: true },
-    identity: {
-      username: BOT_NAME,
-      password: `OAuth:${BOT_OAUTH}`,
-    },
-    channels: [CHANNEL_NAME]
-  });
+  options: { debug: true },
+  identity: {
+    username: BOT_NAME,
+    password: `OAuth:${BOT_OAUTH}`,
+  },
+  channels: [CHANNEL_NAME]
+});
   
 client.connect();
 
@@ -228,6 +228,7 @@ async function newLinkHandler(client, message, twitchUsername, userstate) {
       shouldChangeLink = true;
   }
 }
+
 async function customModFunctions(client, message, twitchUsername, userstate) {
     var messageArray = ([] = message.toLowerCase().split(" "));
 
@@ -1039,7 +1040,7 @@ var StartListener = function () {
           client.say(
             CHANNEL_NAME,
             `${BOT} A new moment PagMan everyone claim it while you can PogU .`
-          )
+          );
         }
       } else if (pubTopic == `predictions-channel-v1.${CHANNEL_ID}`) {
         if (type == "event-created") {

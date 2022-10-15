@@ -24,7 +24,7 @@ export const responses = {
         if (currentMode == "!join.on") {
             client.say(CHANNEL_NAME, `!roblox @${target}`);
         } else if (currentMode == "!link.on") {
-            client.say(CHANNEL_NAME, `${BOT} @${target} Click this linkm to join ${link}`);
+            // client.say(CHANNEL_NAME, `${BOT} @${target} Click this linkm to join ${link}`);
         }
       // if replys worked
         // if (currentMode == "join.on") {

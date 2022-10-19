@@ -742,7 +742,7 @@ export function getPresenceSync (userId,cb) {
   
   export function monitorGetPresenceSync (userId,cb) {
   
-      fetch(`https://presence.roblox.com/v1/presence/users`,{method:'POST',headers:{"Content-Type": "application/json", cookie: `.ROBLOSECURITY=${MAINSMONITOR_COOKIE}`, "X-CSRF-TOKEN": monitorGetXcsrfCB(function(result){return result})},body:`{"userIds": [${userId}]}`})
+      fetch(`https://presence.roblox.com/v1/presence/users`,{method:'POST',headers:{"Content-Type": "application/json", cookie: `.ROBLOSECURITY=${COOKIE}`, "X-CSRF-TOKEN": monitorGetXcsrfCB(function(result){return result})},body:`{"userIds": [${userId}]}`})
       .then((r)=>{
           return r.json()
       })

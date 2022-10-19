@@ -34,7 +34,7 @@ export const responses = {
         // }
     },
     game: async (client, target, message = null) => {
-    const game = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
+    const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation})
     const locationId = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.placeId})
     const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes})
     const SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"))
@@ -44,9 +44,9 @@ export const responses = {
             CHANNEL_NAME, `@${target}, Aly is not playing anything right now.`
         );
     }
-    if (game != 'Website') {
+    if (location != 'Website') {
         return client.say(
-            CHANNEL_NAME, `@${target}, Aly is currenyly playing ${game}`
+            CHANNEL_NAME, `@${target}, Aly is currenyly playing ${location}`
         );
     }
     return client.say(

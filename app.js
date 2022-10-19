@@ -37,9 +37,20 @@ const WAIT_REGISTER = 5 * 60 * 1000; // number of milliseconds, to wait before s
 const CHANNEL_NAME = process.env.CHANNEL_NAME; // name of the channel for the bot to be in
 const CHANNEL_ID = process.env.CHANNEL_ID; // uid of CHANNEL_NAME
 
+let targetId = process.env.TARGET_ID // target id
+
 let SETTINGS = JSON.parse(fs.readFileSync("./SETTINGS.json"));
 let STREAMS = JSON.parse(fs.readFileSync("./STREAMS.json"));
 let WORDS = JSON.parse(fs.readFileSync("./KEYWORDS.json"));
+
+const current = await ROBLOX_FUNCTIONS.monitorGetPresence(targetId).then((r) => { return r })
+
+let gameArray = {
+  oldGame: current.placeId,
+  newGame: current.placeId,
+  oldGameName: current.lastLocation,
+  newGameName: current.lastLocation
+}
 
 const COOLDOWN = 90000 // keyword cooldown
 
@@ -585,6 +596,39 @@ async function customUserFunctions(client, message, twitchUsername, userid, user
     }
   }
 }
+
+let shouldMonitor = false
+
+setInterval(async () => {
+  const location = await ROBLOX_FUNCTIONS.getPresence(alyId).then((r)=>{return r.lastLocation});
+  const onlineStatus = await ROBLOX_FUNCTIONS.getLastOnline(alyId).then((r)=>{return r.diffTimeMinutes})
+    ROBLOX_FUNCTIONS.monitorGetPresenceSync(targetId, function (presence) {
+      const placeId = presence.placeId
+      const universeId = presence.universeId   
+
+      gameArray['oldGame'] = gameArray['newGame']
+      gameArray['newGame'] = placeId
+      gameArray['oldGameName'] = gameArray['newGameName']
+      gameArray['newGameName'] = presence.lastLocation
+
+      if (gameArray['oldGame'] != gameArray['newGame']) {
+        if (gameArray['newGame'] == null) {
+          console.log('target left game with placeid = ' + gameArray['oldGame'])
+          client.action(
+            CHANNEL_NAME, 
+            `${BOT} Aly left the game.`
+          );
+
+      } else if (gameArray['oldGame'] != gameArray['newGame']) {
+        console.log('target joined new game with placeid = ' + gameArray['newGame'])
+        client.action(
+          CHANNEL_NAME, 
+          `${BOT} Aly is now playing ${gameArray['newGameName']}.`
+        );
+      }
+    }
+  })
+}, 4000);
 
 client.on("message", async (
   channel,

@@ -611,20 +611,22 @@ setInterval(async () => {
       gameArray['oldGameName'] = gameArray['newGameName']
       gameArray['newGameName'] = presence.lastLocation
 
-      if (gameArray['oldGame'] != gameArray['newGame']) {
-        if (gameArray['newGame'] == null) {
-          console.log('target left game with placeid = ' + gameArray['oldGame'])
+      if (SETTINGS.ks == false && TWITCH_FUNCTIONS.isLive == true) {
+        if (gameArray['oldGame'] != gameArray['newGame']) {
+          if (gameArray['newGame'] == null) {
+            console.log('target left game with placeid = ' + gameArray['oldGame'])
+            client.action(
+              CHANNEL_NAME, 
+              `${BOT} Aly left the game.`
+            );
+  
+        } else if (gameArray['oldGame'] != gameArray['newGame']) {
+          console.log('target joined new game with placeid = ' + gameArray['newGame'])
           client.action(
             CHANNEL_NAME, 
-            `${BOT} Aly left the game.`
+            `${BOT} Aly is now playing ${gameArray['newGameName']}.`
           );
-
-      } else if (gameArray['oldGame'] != gameArray['newGame']) {
-        console.log('target joined new game with placeid = ' + gameArray['newGame'])
-        client.action(
-          CHANNEL_NAME, 
-          `${BOT} Aly is now playing ${gameArray['newGameName']}.`
-        );
+        }
       }
     }
   })

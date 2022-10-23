@@ -1322,10 +1322,10 @@ if (SETTINGS.ks == false) {
     if (SETTINGS.currentMode == "!link.on") {
       client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Current Link -> ${SETTINGS.currentLink}`);
     } else {
-      client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} There is not currently a link.`);
+      client.raw(`@client-nonce=${userstate['client-nonce']};reply-parent-msg-id=${userstate['id']} PRIVMSG #${CHANNEL_NAME} :${BOT} Aly is currently in a public server.`);
     }
   }
-  if (isBroadcaster || isMod || isAdmin) {
+  if (isAdmin || isBroadcaster || isMod) {
     if (SETTINGS.currentMode == "!link.on") {
       if (SETTINGS.currentLink != null) {
         if (messageArray[0] == "!l" && messageArray[1] == null) {

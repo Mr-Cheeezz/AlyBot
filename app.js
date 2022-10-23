@@ -611,7 +611,7 @@ setInterval(async () => {
       gameArray['oldGameName'] = gameArray['newGameName']
       gameArray['newGameName'] = presence.lastLocation
 
-      if (SETTINGS.ks == false && TWITCH_FUNCTIONS.isLive == true) {
+      if (SETTINGS.ks == false) {
         if (gameArray['oldGame'] != gameArray['newGame']) {
           if (gameArray['newGame'] == null) {
             console.log('target left game with placeid = ' + gameArray['oldGame'])

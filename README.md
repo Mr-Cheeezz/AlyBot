@@ -27,13 +27,13 @@ sudo npm install -g pm2 && sudo npm install nodemon -g
 ### Starting Bot
 
 ```bash
-cd AlyBot && pm2 start app.js
+cd AlyBot && pm2 start app.js && cd ..
 ```
 
 **OR**
 
 ```bash
-cd AlyBot && nodemon app.js
+cd AlyBot && nodemon app.js && cd ..
 ```
 
 ***

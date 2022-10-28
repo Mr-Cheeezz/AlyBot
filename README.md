@@ -21,13 +21,19 @@ sudo npm install dotenv fs node-fetch spotify-buddylist string-similarity tmi.js
 ### Running Bot
 
 ```bash
-sudo npm install -g pm2 && sudo apt npm install nodemon -g
+sudo npm install -g pm2 && sudo npm install nodemon -g
 ```
 
 ### Starting Bot
 
 ```bash
 cd AlyBot && pm2 start app.js
+```
+
+**OR**
+
+```bash
+cd AlyBot && nodemon app.js
 ```
 
 ***

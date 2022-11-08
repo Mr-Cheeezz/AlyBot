@@ -15,7 +15,7 @@ git clone https://github.com/Mr-Cheeezz/AlyBot.git
 ### Packages
 
 ```bash
-sudo npm install dotenv fs node-fetch spotify-buddylist string-similarity tmi.js ws
+sudo npm install dotenv fs node-fetch string-similarity tmi.js ws
 ```
 
 ### Running Bot
